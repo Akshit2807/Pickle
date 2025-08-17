@@ -38,14 +38,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xfff2b85a),
-              Color(0xFFf86f54),
-            ],
-          ),
+          color: Color(0xFFFECF67), // Updated background color
         ),
         child: SafeArea(
           child: SlideTransition(
@@ -57,34 +50,34 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Text(
+                        'Welcome to Pickle',
+                        style: TextStyle(
+                          fontSize: 38,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black, // Updated text color
+                        ),
+                      ),
+                      SizedBox(height: 10),
                       Hero(
                         tag: 'logo',
                         child: Center(
                           child: Image.asset(
-                            'assets/logo/logo_zoomed.png',
-                            width: 140,
-                            height: 140,
+                            'assets/logo/logo_zoomed.png', // Assuming logo is suitable for new background
+                            width: 160,
+                            height: 160,
                           ),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Welcome to Pickle',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
                         ),
                       ),
                       SizedBox(height: 10),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 40),
                         child: Text(
-                          'Swipe right to find your perfect match and create meaningful connections',
+                          '\"Because sometimes love comes in unexpected flavors\"',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.black, // Updated text color
                             height: 1.5,
                           ),
                         ),
@@ -122,7 +115,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.white.withOpacity(0.7),
+                            color: Colors.black, // Updated text color
                           ),
                         ),
                       ],
@@ -151,10 +144,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             child: ElevatedButton(
               onPressed: onPressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isPrimary ? Colors.white : Colors.transparent,
-                foregroundColor: isPrimary ? Color(0xFFee403a) : Colors.white,
+                backgroundColor: isPrimary ? Color(0xFFE74C3C) : Colors.transparent, // Deep green for primary
+                foregroundColor: isPrimary ? Colors.white : Colors.black, // White text for primary, black for secondary
                 elevation: isPrimary ? 8 : 0,
-                side: isPrimary ? null : BorderSide(color: Colors.white, width: 2),
+                side: isPrimary ? null : BorderSide(color: Colors.black, width: 2), // Updated border color
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(27.5),
                 ),
@@ -165,6 +158,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
+                  // Color is inherited from foregroundColor
                 ),
               ),
             ),

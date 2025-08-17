@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pickle/views/auth/signup_screen.dart';
 
+import '../dashboard/dashboard_screen.dart';
+
 // Login Screen
 class LoginScreen extends StatefulWidget {
   @override
@@ -308,7 +310,10 @@ class _LoginScreenState extends State<LoginScreen>
       );
 
       // TODO: Navigate to dashboard
-      // Navigator.pushReplacementNamed(context, '/dashboard');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => DashboardScreen()),
+      );
     }
   }
 

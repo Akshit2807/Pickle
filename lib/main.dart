@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // This import is not used, consider removing if not needed elsewhere.
-// import 'dart:async'; // No longer needed here
-// import 'dart:math' as math; // No longer needed here
 
 import 'package:pickle/views/auth/splash_screen.dart'; // Adjusted import
 import 'package:pickle/models/user.dart'; // For User model
 import 'package:pickle/viewmodels/auth_viewmodel.dart'; // For AuthViewModel
+
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(PickleApp());
@@ -30,8 +29,10 @@ class PickleApp extends StatelessWidget {
           800: Color(0xFF996118),
           900: Color(0xFF7A4310), // darkest - rich burnt orange/brown
         }),
-
-        fontFamily: 'SF Pro Display',
+        textTheme: GoogleFonts.signikaTextTheme(
+          Theme.of(context).textTheme,
+        ),
+        fontFamily: GoogleFonts.signika().fontFamily,
       ),
       home: SplashScreen(), // SplashScreen is now imported
     );

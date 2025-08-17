@@ -69,19 +69,11 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFf2c75a),
-              Color(0xFFf86f54),
-              Color(0xFFee403a),
-            ],
-          ),
+          color: Color(0xFFFECF67), // Updated background color
         ),
         child: Stack(
           children: [
-            // Animated Background Elements
+            // Animated Background Elements - kept as white with opacity for now
             AnimatedBuilder(
               animation: _backgroundRotation,
               builder: (context, child) {
@@ -123,7 +115,7 @@ class _SplashScreenState extends State<SplashScreen>
               },
             ),
             // Floating Logos
-            ...List.generate(6, (index) => FloatingHeart(delay: index * 0.5)),
+            ...List.generate(6, (index) => FloatingHeart(delay: index * 0.5)), // Assuming FloatingHeart is designed to work with any background
             // Logo
             Center(
               child: AnimatedBuilder(
@@ -136,34 +128,29 @@ class _SplashScreenState extends State<SplashScreen>
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Center(
-                            child: Image.asset( // Changed from Icon
-                              'assets/logo/logo_zoomed.png',
-                              width: 120,
-                              height: 120,
-                            ),
-                          ),
+
                           // SizedBox(height: 20),
                           Text(
                             'Pickle',
                             style: TextStyle(
-                              fontSize: 48,
+                              fontSize: 52,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              shadows: [
-                                Shadow(
-                                  blurRadius: 10,
-                                  color: Colors.black26,
-                                  offset: Offset(0, 2),
-                                ),
-                              ],
+                              color: Colors.black, // Updated text color
+                              // Removed shadows as they might not look good with black text on this background
+                            ),
+                          ),
+                          Center(
+                            child: Image.asset( // Changed from Icon
+                              'assets/logo/logo_zoomed.png',
+                              width: 140,
+                              height: 140,
                             ),
                           ),
                           Text(
                             'Find Your Perfect Match',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.black, // Updated text color
                               fontWeight: FontWeight.w300,
                             ),
                           ),
