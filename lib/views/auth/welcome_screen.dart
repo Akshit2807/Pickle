@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pickle/views/auth/signup_screen.dart'; // Will create this file next
-import 'package:pickle/views/auth/login_screen.dart'; // Will create this file next
+import 'package:pickle/views/auth/signup_screen.dart';
+import 'package:pickle/views/auth/login_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   @override
@@ -36,100 +36,103 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          color: Color(0xFFFECF67), // Updated background color
-        ),
-        child: SafeArea(
-          child: SlideTransition(
-            position: _slideAnimation,
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 3,
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: SlideTransition(
+          position: _slideAnimation,
+          // Use a single Column that takes all available space
+          child: Column( 
+            children: [
+              // 1. Top Section (Black background/Blurred image placeholder)
+              // Use a Container with a fixed height or a flexible widget (like below)
+              // to define the top space, and let the bottom content flow naturally.
+              // We'll use a Spacer to fill the space above the heart.
+              
+              // 2. Bottom Content Section (The actual text and buttons)
+              Expanded( // Make the content section expanded to fill the remainder
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 30),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    // Aligns content to the bottom of the Expanded space
+                    mainAxisAlignment: MainAxisAlignment.end, 
                     children: [
+                      // Use a Spacer to dynamically push the content down
+                      Spacer(flex: 20), 
+                      
+                      Icon(
+                        Icons.favorite,
+                        color: Color(0xFF660033), // Used the darkest pink from your gradient for the heart
+                        size: 60,
+                      ),
+                      SizedBox(height: 20),
                       Text(
-                        'Welcome to Pickle',
+                        'Inclusive, reliable, safe.',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 38,
+                          fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black, // Updated text color
+                          color: Colors.white,
                         ),
                       ),
                       SizedBox(height: 10),
-                      Hero(
-                        tag: 'logo',
-                        child: Center(
-                          child: Image.asset(
-                            'assets/logo/logo_zoomed.png', // Assuming logo is suitable for new background
-                            width: 160,
-                            height: 160,
-                          ),
+                      Text(
+                        'Go beyond your social circle & connect\nwith people near and far.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[400],
+                          height: 1.5,
                         ),
                       ),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40),
+                      
+                      // Add a smaller Spacer to control the gap above the button
+                      Spacer(flex: 3), 
+                      
+                      _buildAnimatedButton(
+                        'Next',
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignupScreen()),
+                        ),
+                        isPrimary: true,
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        'Already have an account?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      TextButton(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginScreen()),
+                        ),
                         child: Text(
-                          '\"Because sometimes love comes in unexpected flavors\"',
-                          textAlign: TextAlign.center,
+                          'Login',
                           style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black, // Updated text color
-                            height: 1.5,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
                       ),
+                      SizedBox(height: 30), // Retain padding from the bottom edge
                     ],
                   ),
                 ),
-                Expanded(
-                  flex: 2,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 30),
-                    child: Column(
-                      children: [
-                        _buildAnimatedButton(
-                          'Create Account',
-                              () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SignupScreen()),
-                          ),
-                          isPrimary: true,
-                        ),
-                        SizedBox(height: 15),
-                        _buildAnimatedButton(
-                          'Sign In',
-                              () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => LoginScreen()),
-                          ),
-                          isPrimary: false,
-                        ),
-                        SizedBox(height: 30),
-                        Text(
-                          'By continuing, you agree to our Terms of Service\nand Privacy Policy',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.black, // Updated text color
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
+  // The _buildAnimatedButton method remains mostly the same, ensuring the gradient is correct.
   Widget _buildAnimatedButton(String text, VoidCallback onPressed,
       {required bool isPrimary}) {
     return TweenAnimationBuilder<double>(
@@ -141,24 +144,33 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           child: Container(
             width: double.infinity,
             height: 55,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(27.5),
+              gradient: isPrimary
+                  ? LinearGradient(
+                      // Pink gradient colors from the image
+                      colors: [Color(0xFF660033), Color(0xFF660033)], 
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    )
+                  : null,
+            ),
             child: ElevatedButton(
               onPressed: onPressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isPrimary ? Color(0xFFE74C3C) : Colors.transparent, // Deep green for primary
-                foregroundColor: isPrimary ? Colors.white : Colors.black, // White text for primary, black for secondary
-                elevation: isPrimary ? 8 : 0,
-                side: isPrimary ? null : BorderSide(color: Colors.black, width: 2), // Updated border color
+                backgroundColor: Colors.transparent, 
+                foregroundColor: Colors.white,
+                elevation: 0, 
+                side: BorderSide.none,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(27.5),
                 ),
-                shadowColor: Colors.black26,
               ),
               child: Text(
                 text,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  // Color is inherited from foregroundColor
                 ),
               ),
             ),
