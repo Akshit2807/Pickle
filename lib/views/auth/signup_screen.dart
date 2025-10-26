@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:pickle/models/user.dart';
-import 'package:pickle/viewmodels/auth_viewmodel.dart';
-import 'package:pickle/views/auth/login_screen.dart';
-import 'package:pickle/views/auth/user_verification_screen.dart';
+import 'package:pickle/controllers/auth_controller.dart';
+import 'package:pickle/views/dashboard/dashboard_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   @override
@@ -16,17 +16,22 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen>
     with TickerProviderStateMixin {
   late PageController _pageController;
-  final AuthViewModel _authViewModel = AuthViewModel();
+  late AuthController _authController;
+  late User _user;
 
   final List<GlobalKey<FormState>> _formKeys = List.generate(4, (_) => GlobalKey<FormState>());
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+    _authController = Get.find<AuthController>();
+    _user = User();
+    _authController.resetSignupFlow();
   }
 
   @override
@@ -45,18 +50,18 @@ class _SignupScreenState extends State<SignupScreen>
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Color(0xFFee403a)),
           onPressed: () {
-            if (_authViewModel.currentStep > 0) {
+            if (_authController.currentStep > 0) {
               _previousStep();
             } else {
-              Navigator.pop(context);
+              Get.back();
             }
           },
         ),
-        title: LinearProgressIndicator(
-          value: (_authViewModel.currentStep + 1) / 4,
+        title: Obx(() => LinearProgressIndicator(
+          value: (_authController.currentStep + 1) / 4,
           backgroundColor: Colors.grey[300],
           valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFee403a)),
-        ),
+        )),
         centerTitle: true,
       ),
       body: Column(
@@ -80,10 +85,10 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildBasicInfoStep() {
-    final nameController = TextEditingController(text: _authViewModel.user.name);
-    final emailController = TextEditingController(text: _authViewModel.user.email);
-    final phoneController = TextEditingController(text: _authViewModel.user.phone);
-    final passwordController = TextEditingController(text: _authViewModel.user.password);
+    final nameController = TextEditingController(text: _user.name);
+    final emailController = TextEditingController(text: _user.email);
+    final phoneController = TextEditingController(text: _user.phone);
+    final passwordController = TextEditingController(text: _user.password);
     final confirmPasswordController = TextEditingController();
 
     return SingleChildScrollView(
@@ -104,7 +109,7 @@ class _SignupScreenState extends State<SignupScreen>
               label: 'First Name',
               icon: Icons.person_outline,
               onChanged: (value) {
-                _authViewModel.user.name = value;
+                _user.name = value;
               },
               validator: (value) => value?.isEmpty == true ? 'Name is required' : null,
             ),
@@ -114,7 +119,7 @@ class _SignupScreenState extends State<SignupScreen>
               label: 'Email',
               icon: Icons.email_outlined,
               onChanged: (value) {
-                _authViewModel.user.email = value;
+                _user.email = value;
               },
               validator: (value) {
                 if (value?.isEmpty == true) return 'Email is required';
@@ -130,7 +135,7 @@ class _SignupScreenState extends State<SignupScreen>
               label: 'Phone Number (Optional)',
               icon: Icons.phone_outlined,
               onChanged: (value) {
-                _authViewModel.user.phone = value;
+                _user.phone = value;
               },
             ),
             SizedBox(height: 20),
@@ -146,7 +151,7 @@ class _SignupScreenState extends State<SignupScreen>
                 });
               },
               onChanged: (value) {
-                _authViewModel.user.password = value;
+                _user.password = value;
               },
               validator: (value) {
                 if (value?.isEmpty == true) return 'Password is required';
@@ -233,7 +238,7 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildPersonalityStep() {
-    final bioController = TextEditingController(text: _authViewModel.user.bio);
+    final bioController = TextEditingController(text: _user.bio);
 
     return SingleChildScrollView(
       padding: EdgeInsets.all(30),
@@ -254,7 +259,7 @@ class _SignupScreenState extends State<SignupScreen>
               icon: Icons.edit_outlined,
               maxLines: 4,
               onChanged: (value) {
-                _authViewModel.user.bio = value;
+                _user.bio = value;
               },
               validator: (value) => value?.isEmpty == true ? 'Please tell us about yourself' : null,
             ),
@@ -405,13 +410,13 @@ class _SignupScreenState extends State<SignupScreen>
         Wrap(
           spacing: 10,
           children: ['Man', 'Woman', 'Non-binary', 'Other'].map((gender) {
-            final isSelected = _authViewModel.user.gender == gender;
+            final isSelected = _user.gender == gender;
             return FilterChip(
               label: Text(gender),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
-                  _authViewModel.user.gender = selected ? gender : null;
+                  _user.gender = selected ? gender : null;
                 });
               },
               selectedColor: Color(0xFFee403a).withOpacity(0.2),
@@ -435,13 +440,13 @@ class _SignupScreenState extends State<SignupScreen>
         Wrap(
           spacing: 10,
           children: ['Men', 'Women', 'Non-binary', 'Everyone'].map((interest) {
-            final isSelected = _authViewModel.user.interestedIn == interest;
+            final isSelected = _user.interestedIn == interest;
             return FilterChip(
               label: Text(interest),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
-                  _authViewModel.user.interestedIn = selected ? interest : null;
+                  _user.interestedIn = selected ? interest : null;
                 });
               },
               selectedColor: Color(0xFFee403a).withOpacity(0.2),
@@ -466,7 +471,7 @@ class _SignupScreenState extends State<SignupScreen>
           onTap: () async {
             final date = await showDatePicker(
               context: context,
-              initialDate: _authViewModel.user.birthDate ?? DateTime(2000),
+              initialDate: _user.birthDate ?? DateTime(2000),
               firstDate: DateTime(1950),
               lastDate: DateTime.now().subtract(Duration(days: 365 * 18)),
               builder: (context, child) {
@@ -482,7 +487,7 @@ class _SignupScreenState extends State<SignupScreen>
             );
             if (date != null) {
               setState(() {
-                _authViewModel.user.birthDate = date;
+                _user.birthDate = date;
               });
             }
           },
@@ -499,12 +504,12 @@ class _SignupScreenState extends State<SignupScreen>
                 Icon(Icons.calendar_today, color: Color(0xFFee403a)),
                 SizedBox(width: 15),
                 Text(
-                  _authViewModel.user.birthDate != null
-                      ? '${_authViewModel.user.birthDate!.day}/${_authViewModel.user.birthDate!.month}/${_authViewModel.user.birthDate!.year}'
+                  _user.birthDate != null
+                      ? '${_user.birthDate!.day}/${_user.birthDate!.month}/${_user.birthDate!.year}'
                       : 'Select your birth date',
                   style: TextStyle(
                     fontSize: 16,
-                    color: _authViewModel.user.birthDate != null
+                    color: _user.birthDate != null
                         ? Colors.black87
                         : Colors.grey[600],
                   ),
@@ -518,7 +523,7 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildLocationField() {
-    final locationController = TextEditingController(text: _authViewModel.user.location);
+    final locationController = TextEditingController(text: _user.location);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -531,7 +536,7 @@ class _SignupScreenState extends State<SignupScreen>
         TextFormField(
           controller: locationController,
           onChanged: (value) {
-            _authViewModel.user.location = value;
+            _user.location = value;
           },
           decoration: InputDecoration(
             labelText: 'Enter your city',
@@ -620,7 +625,7 @@ class _SignupScreenState extends State<SignupScreen>
 
         setState(() {
           controller.text = address.isNotEmpty ? address : 'Current Location';
-          _authViewModel.user.location = controller.text;
+          _user.location = controller.text;
         });
 
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -686,12 +691,12 @@ class _SignupScreenState extends State<SignupScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Age Range: ${(_authViewModel.user.ageRange?.start ?? 18).round()} - ${(_authViewModel.user.ageRange?.end ?? 30).round()}',
+          'Age Range: ${(_user.ageRange?.start ?? 18).round()} - ${(_user.ageRange?.end ?? 30).round()}',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         SizedBox(height: 15),
         RangeSlider(
-          values: _authViewModel.user.ageRange ?? RangeValues(18, 30),
+          values: _user.ageRange ?? RangeValues(18, 30),
           min: 18,
           max: 65,
           divisions: 47,
@@ -699,7 +704,7 @@ class _SignupScreenState extends State<SignupScreen>
           inactiveColor: Color(0xFFee403a).withOpacity(0.3),
           onChanged: (values) {
             setState(() {
-              _authViewModel.user.ageRange = values;
+              _user.ageRange = values;
             });
           },
         ),
@@ -712,12 +717,12 @@ class _SignupScreenState extends State<SignupScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Distance: ${(_authViewModel.user.distanceRange ?? 25).round()} km',
+          'Distance: ${(_user.distanceRange ?? 25).round()} km',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         SizedBox(height: 15),
         Slider(
-          value: _authViewModel.user.distanceRange ?? 25,
+          value: _user.distanceRange ?? 25,
           min: 1,
           max: 100,
           divisions: 99,
@@ -725,7 +730,7 @@ class _SignupScreenState extends State<SignupScreen>
           inactiveColor: Color(0xFFee403a).withOpacity(0.3),
           onChanged: (value) {
             setState(() {
-              _authViewModel.user.distanceRange = value;
+              _user.distanceRange = value;
             });
           },
         ),
@@ -746,13 +751,13 @@ class _SignupScreenState extends State<SignupScreen>
           spacing: 10,
           runSpacing: 10,
           children: ['Casual dating', 'Serious relationship', 'Marriage', 'Friendship', 'Not sure yet'].map((goal) {
-            final isSelected = _authViewModel.user.relationshipGoals == goal;
+            final isSelected = _user.relationshipGoals == goal;
             return FilterChip(
               label: Text(goal),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
-                  _authViewModel.user.relationshipGoals = selected ? goal : null;
+                  _user.relationshipGoals = selected ? goal : null;
                 });
               },
               selectedColor: Color(0xFFee403a).withOpacity(0.2),
@@ -782,18 +787,18 @@ class _SignupScreenState extends State<SignupScreen>
           spacing: 10,
           runSpacing: 10,
           children: interests.map((interest) {
-            final userInterests = _authViewModel.user.interests ?? [];
+            final userInterests = _user.interests ?? [];
             final isSelected = userInterests.contains(interest);
             return FilterChip(
               label: Text(interest),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
-                  final currentInterests = _authViewModel.user.interests ?? [];
+                  final currentInterests = _user.interests ?? [];
                   if (selected && currentInterests.length < 5) {
-                    _authViewModel.user.interests = [...currentInterests, interest];
+                    _user.interests = [...currentInterests, interest];
                   } else if (!selected) {
-                    _authViewModel.user.interests = currentInterests.where((i) => i != interest).toList();
+                    _user.interests = currentInterests.where((i) => i != interest).toList();
                   }
                 });
               },
@@ -819,13 +824,13 @@ class _SignupScreenState extends State<SignupScreen>
           spacing: 10,
           runSpacing: 10,
           children: ['Non-smoker', 'Smoker', 'Social drinker', 'Non-drinker', 'Pet lover', 'No pets'].map((lifestyle) {
-            final isSelected = _authViewModel.user.lifestyle == lifestyle;
+            final isSelected = _user.lifestyle == lifestyle;
             return FilterChip(
               label: Text(lifestyle),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
-                  _authViewModel.user.lifestyle = selected ? lifestyle : null;
+                  _user.lifestyle = selected ? lifestyle : null;
                 });
               },
               selectedColor: Color(0xFFee403a).withOpacity(0.2),
@@ -838,14 +843,14 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildBottomNavigation() {
-    return Container(
+    return Obx(() => Container(
       padding: EdgeInsets.all(20),
       child: Row(
         children: [
-          if (_authViewModel.currentStep > 0)
+          if (_authController.currentStep > 0)
             Expanded(
               child: OutlinedButton(
-                onPressed: _previousStep,
+                onPressed: _isSubmitting ? null : _previousStep,
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: Color(0xFFee403a)),
                   shape: RoundedRectangleBorder(
@@ -863,11 +868,11 @@ class _SignupScreenState extends State<SignupScreen>
                 ),
               ),
             ),
-          if (_authViewModel.currentStep > 0) SizedBox(width: 15),
+          if (_authController.currentStep > 0) SizedBox(width: 15),
           Expanded(
             flex: 2,
             child: ElevatedButton(
-              onPressed: _nextStep,
+              onPressed: _isSubmitting ? null : _nextStep,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFee403a),
                 shape: RoundedRectangleBorder(
@@ -876,44 +881,65 @@ class _SignupScreenState extends State<SignupScreen>
                 padding: EdgeInsets.symmetric(vertical: 15),
                 elevation: 5,
               ),
-              child: Text(
-                _authViewModel.currentStep == 3 ? 'Complete' : 'Continue',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              child: _isSubmitting
+                  ? CircularProgressIndicator(color: Colors.white)
+                  : Text(
+                      _authController.currentStep == 3 ? 'Complete' : 'Continue',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
             ),
           ),
         ],
       ),
-    );
+    ));
   }
 
-  void _nextStep() {
-    if (_formKeys[_authViewModel.currentStep].currentState?.validate() ?? true) {
-      if (_authViewModel.currentStep < 3) {
-        setState(() {
-          _authViewModel.nextStep();
-        });
+  void _nextStep() async {
+    if (_formKeys[_authController.currentStep].currentState?.validate() ?? true) {
+      if (_authController.currentStep < 3) {
+        _authController.nextStep();
         _pageController.nextPage(
           duration: Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
       } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => UserVerificationScreen()),
-        );
+        // Final step - create account with Firebase
+        await _completeSignup();
       }
     }
   }
 
+  Future<void> _completeSignup() async {
+    setState(() => _isSubmitting = true);
+
+    final success = await _authController.signUp(
+      email: _user.email!,
+      password: _user.password!,
+      userData: _user,
+    );
+
+    setState(() => _isSubmitting = false);
+
+    if (success) {
+      // Navigate directly to dashboard - user is already logged in after signup
+      Get.offAll(() => DashboardScreen());
+      Get.snackbar(
+        'Success',
+        'Welcome to Pickle! Your account has been created.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        duration: Duration(seconds: 3),
+      );
+    }
+  }
+
   void _previousStep() {
-    setState(() {
-      _authViewModel.previousStep();
-    });
+    _authController.previousStep();
     _pageController.previousPage(
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,

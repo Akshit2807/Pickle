@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math' as math;
-import 'package:pickle/widgets/animations/floating_logo.dart'; // Adjusted import
-import 'package:pickle/views/auth/welcome_screen.dart'; // Will create this file next
+import 'package:get/get.dart';
+import 'package:pickle/widgets/animations/floating_logo.dart';
+import 'package:pickle/views/auth/welcome_screen.dart';
+import 'package:pickle/views/dashboard/dashboard_screen.dart';
+import 'package:pickle/controllers/auth_controller.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -43,16 +46,23 @@ class _SplashScreenState extends State<SplashScreen>
     _logoController.forward();
 
     Timer(Duration(seconds: 3), () {
-      if (mounted) { // Added mounted check
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, _) => WelcomeScreen(),
-            transitionsBuilder: (context, animation, _, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-          ),
-        );
+      if (mounted) {
+        // Check if user is already logged in
+        final authController = Get.find<AuthController>();
+
+        if (authController.isLoggedIn && authController.firebaseUser != null) {
+          // User is logged in, navigate to dashboard
+          Get.off(() => DashboardScreen(),
+            transition: Transition.fade,
+            duration: Duration(milliseconds: 500),
+          );
+        } else {
+          // User is not logged in, navigate to welcome screen
+          Get.off(() => WelcomeScreen(),
+            transition: Transition.fade,
+            duration: Duration(milliseconds: 500),
+          );
+        }
       }
     });
   }

@@ -18,5 +18,26 @@ class User {
   String? profileImage;
   List<String>? verificationImages;
 
+  // Default constructor
   User();
+
+  // Named parameter constructor for creating from Firestore data
+  User.fromData({
+    this.name,
+    this.email,
+    this.phone,
+    this.password,
+    this.gender,
+    this.interestedIn,
+    this.birthDate,
+    this.location,
+    this.ageRange,
+    this.distanceRange,
+    this.relationshipGoals,
+    this.bio,
+    this.interests,
+    this.lifestyle,
+    this.profileImage,
+    this.verificationImages,
+  });
 }

@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:get/get.dart';
 
-import 'package:pickle/views/auth/splash_screen.dart'; // Adjusted import
-import 'package:pickle/models/user.dart'; // For User model
-import 'package:pickle/viewmodels/auth_viewmodel.dart'; // For AuthViewModel
+import 'package:pickle/views/auth/splash_screen.dart';
+import 'package:pickle/controllers/auth_controller.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  // Initialize GetX controllers
+  Get.put(AuthController());
+
   runApp(PickleApp());
 }
 
 class PickleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Pickle Dating App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -34,15 +41,8 @@ class PickleApp extends StatelessWidget {
         ),
         fontFamily: GoogleFonts.signika().fontFamily,
       ),
-      home: SplashScreen(), // SplashScreen is now imported
+      home: SplashScreen(),
     );
   }
 }
 
-// Models - To be moved to models/
-// class User defined in models/user.dart
-
-// View Models - To be moved to viewmodels/
-// class AuthViewModel defined in viewmodels/auth_viewmodel.dart
-
-// Screens have been moved to their respective files in views/auth/

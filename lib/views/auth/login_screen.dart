@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pickle/views/auth/signup_screen.dart';
-
-import '../dashboard/dashboard_screen.dart';
+import 'package:pickle/views/dashboard/dashboard_screen.dart';
+import 'package:pickle/controllers/auth_controller.dart';
 
 // Login Screen
 class LoginScreen extends StatefulWidget {
@@ -135,10 +136,7 @@ class _LoginScreenState extends State<LoginScreen>
                         style: TextStyle(color: Colors.grey[600]),
                       ),
                       GestureDetector(
-                        onTap: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => SignupScreen()),
-                        ),
+                        onTap: () => Get.off(() => SignupScreen()),
                         child: Text(
                           'Sign Up',
                           style: TextStyle(
@@ -291,29 +289,27 @@ class _LoginScreenState extends State<LoginScreen>
     if (_formKey.currentState?.validate() ?? false) {
       setState(() => _isLoading = true);
 
-      // Simulate API call
-      await Future.delayed(Duration(seconds: 2));
+      final authController = Get.find<AuthController>();
+
+      bool success = await authController.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
 
       setState(() => _isLoading = false);
 
-      // TODO: Implement actual login logic
-      // For now, show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Login successful! Welcome back!'),
+      if (success) {
+        // Navigate to dashboard
+        Get.offAll(() => DashboardScreen());
+        Get.snackbar(
+          'Success',
+          'Welcome back!',
+          snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      );
-
-      // TODO: Navigate to dashboard
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => DashboardScreen()),
-      );
+          colorText: Colors.white,
+          duration: Duration(seconds: 2),
+        );
+      }
     }
   }
 
@@ -370,18 +366,20 @@ class _LoginScreenState extends State<LoginScreen>
           ),
           ElevatedButton(
             onPressed: () {
+              final authController = Get.find<AuthController>();
               Navigator.pop(context);
-              // TODO: Implement password reset
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Password reset link sent to ${emailController.text}'),
-                  backgroundColor: Color(0xFFee403a),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              );
+
+              if (emailController.text.isNotEmpty) {
+                authController.resetPassword(emailController.text.trim());
+              } else {
+                Get.snackbar(
+                  'Error',
+                  'Please enter your email address',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Color(0xFFee403a),

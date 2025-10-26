@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pickle/views/auth/signup_screen.dart'; // Will create this file next
-import 'package:pickle/views/auth/login_screen.dart'; // Will create this file next
+import 'package:get/get.dart';
+import 'package:pickle/views/auth/signup_screen.dart';
+import 'package:pickle/views/auth/login_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   @override
@@ -93,20 +94,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       children: [
                         _buildAnimatedButton(
                           'Create Account',
-                              () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SignupScreen()),
-                          ),
+                              () => Get.to(() => SignupScreen()),
                           isPrimary: true,
                         ),
                         SizedBox(height: 15),
                         _buildAnimatedButton(
                           'Sign In',
-                              () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => LoginScreen()),
-                          ),
+                              () => Get.to(() => LoginScreen()),
                           isPrimary: false,
                         ),
                         SizedBox(height: 30),
