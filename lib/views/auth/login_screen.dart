@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Color(0xFFee403a)),
+          icon: Icon(Icons.arrow_back_ios, color: Color(0xFF660033)),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen>
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFee403a),
+                    color: Color(0xFF660033),
                   ),
                 ),
                 SizedBox(height: 8),
@@ -115,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen>
                     },
                     child: Text(
                       'Forgot Password?',
-                      style: TextStyle(color: Color(0xFFee403a)),
+                      style: TextStyle(color: Color(0xFF660033)),
                     ),
                   ),
                 ),
@@ -142,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen>
                         child: Text(
                           'Sign Up',
                           style: TextStyle(
-                            color: Color(0xFFee403a),
+                            color: Color(0xFF660033),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -169,14 +169,18 @@ class _LoginScreenState extends State<LoginScreen>
       controller: controller,
       obscureText: isPassword && !_isPasswordVisible,
       validator: validator,
+      cursorColor: Colors.black,
+      style: TextStyle(color: Color(0xFF660033)),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Color(0xFFee403a)),
+        labelStyle: TextStyle(color: Color(0xFF660033)),
+        hintStyle: TextStyle(color: Colors.grey[500]),
+        prefixIcon: Icon(icon, color: Color(0xFF660033)),
         suffixIcon: isPassword
             ? IconButton(
           icon: Icon(
             _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-            color: Color(0xFFee403a),
+            color: Color(0xFF660033),
           ),
           onPressed: () {
             setState(() {
@@ -191,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen>
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Color(0xFFee403a), width: 2),
+          borderSide: BorderSide(color: Color(0xFF660033), width: 2),
         ),
         filled: true,
         fillColor: Colors.grey[50],
@@ -206,7 +210,7 @@ class _LoginScreenState extends State<LoginScreen>
       child: ElevatedButton(
         onPressed: _isLoading ? null : _handleLogin,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFFee403a),
+          backgroundColor: Color(0xFF660033),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -328,11 +332,11 @@ class _LoginScreenState extends State<LoginScreen>
         ),
         title: Row(
           children: [
-            Icon(Icons.lock_reset, color: Color(0xFFee403a)),
+            Icon(Icons.lock_reset, color: Color(0xFF660033)),
             SizedBox(width: 10),
             Text(
               'Reset Password',
-              style: TextStyle(color: Color(0xFFee403a)),
+              style: TextStyle(color: Color(0xFF660033)),
             ),
           ],
         ),
@@ -346,15 +350,19 @@ class _LoginScreenState extends State<LoginScreen>
             SizedBox(height: 20),
             TextFormField(
               controller: emailController,
+              cursorColor: Colors.black,
+              style: TextStyle(color: Color(0xFF660033)),
               decoration: InputDecoration(
                 labelText: 'Email Address',
-                prefixIcon: Icon(Icons.email_outlined, color: Color(0xFFee403a)),
+                labelStyle: TextStyle(color: Color(0xFF660033)),
+                hintStyle: TextStyle(color: Colors.grey[500]),
+                prefixIcon: Icon(Icons.email_outlined, color: Color(0xFF660033)),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Color(0xFFee403a), width: 2),
+                  borderSide: BorderSide(color: Color(0xFF660033), width: 2),
                 ),
               ),
             ),
@@ -375,7 +383,7 @@ class _LoginScreenState extends State<LoginScreen>
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Password reset link sent to ${emailController.text}'),
-                  backgroundColor: Color(0xFFee403a),
+                  backgroundColor: Color(0xFF660033),
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -384,7 +392,7 @@ class _LoginScreenState extends State<LoginScreen>
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFee403a),
+              backgroundColor: Color(0xFF660033),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),

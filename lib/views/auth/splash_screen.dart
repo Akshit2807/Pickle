@@ -69,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          color: Color(0xFFFECF67), // Updated background color
+          color: Color(0xFF400020), // Updated background color
         ),
         child: Stack(
           children: [
@@ -135,7 +135,7 @@ class _SplashScreenState extends State<SplashScreen>
                             style: TextStyle(
                               fontSize: 52,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black, // Updated text color
+                              color: Colors.white, // Updated text color
                               // Removed shadows as they might not look good with black text on this background
                             ),
                           ),
@@ -150,7 +150,7 @@ class _SplashScreenState extends State<SplashScreen>
                             'Find Your Perfect Match',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.black, // Updated text color
+                              color: Colors.white, // Updated text color
                               fontWeight: FontWeight.w300,
                             ),
                           ),

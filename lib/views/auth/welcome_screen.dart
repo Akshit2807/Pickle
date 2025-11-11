@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart'; // 👈 IMPORT LOTTIE 
 import 'package:pickle/views/auth/signup_screen.dart';
 import 'package:pickle/views/auth/login_screen.dart';
+
+// Define the primary color (dark pink/purple) for consistency
+const Color _primaryColor = Color(0xFF660033);
 
 class WelcomeScreen extends StatefulWidget {
   @override
@@ -40,89 +44,87 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       body: SafeArea(
         child: SlideTransition(
           position: _slideAnimation,
-          // Use a single Column that takes all available space
-          child: Column( 
+          child: Column(
             children: [
-              // 1. Top Section (Black background/Blurred image placeholder)
-              // Use a Container with a fixed height or a flexible widget (like below)
-              // to define the top space, and let the bottom content flow naturally.
-              // We'll use a Spacer to fill the space above the heart.
+              // 1. Top Section - Lottie Animation
+              // We use a flexible Spacer, then the Lottie, then another Spacer,
+              // to perfectly center the Lottie file horizontally and vertically
+              // within the top black area.
+              Spacer(flex: 10),
+
+              //REPLACED THE ICON WITH LOTTIE.ASSET 
+              Lottie.asset(
+                'assets/lotties/welcome.json', //  file path
+                width: 600, // Adjust size as needed for your animation
+                height: 325,
+                fit: BoxFit.contain,
+                repeat: true, // Typically, welcome animations loop
+              ),
               
+              Spacer(flex: 10), // Ensures the Lottie takes up vertical space
+
               // 2. Bottom Content Section (The actual text and buttons)
-              Expanded( // Make the content section expanded to fill the remainder
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30),
-                  child: Column(
-                    // Aligns content to the bottom of the Expanded space
-                    mainAxisAlignment: MainAxisAlignment.end, 
-                    children: [
-                      // Use a Spacer to dynamically push the content down
-                      Spacer(flex: 20), 
-                      
-                      Icon(
-                        Icons.favorite,
-                        color: Color(0xFF660033), // Used the darkest pink from your gradient for the heart
-                        size: 60,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Inclusive, reliable, safe.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-                      SizedBox(height: 20),
-                      Text(
-                        'Inclusive, reliable, safe.',
-                        textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Go beyond your social circle & connect\nwith people near and far.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[400],
+                        height: 1.5,
+                      ),
+                    ),
+                    
+                    SizedBox(height: 50), // Increased spacing above the button for better look
+                    
+                    _buildAnimatedButton(
+                      'Next',
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignupScreen()),
+                      ),
+                      isPrimary: true,
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      'Already have an account?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    TextButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      ),
+                      child: Text(
+                        'Login',
                         style: TextStyle(
-                          fontSize: 28,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Go beyond your social circle & connect\nwith people near and far.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[400],
-                          height: 1.5,
-                        ),
-                      ),
-                      
-                      // Add a smaller Spacer to control the gap above the button
-                      Spacer(flex: 3), 
-                      
-                      _buildAnimatedButton(
-                        'Next',
-                        () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => SignupScreen()),
-                        ),
-                        isPrimary: true,
-                      ),
-                      SizedBox(height: 20),
-                      Text(
-                        'Already have an account?',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      TextButton(
-                        onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginScreen()),
-                        ),
-                        child: Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 30), // Retain padding from the bottom edge
-                    ],
-                  ),
+                    ),
+                    SizedBox(height: 30), // Retain padding from the bottom edge
+                  ],
                 ),
               ),
             ],
@@ -132,7 +134,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     );
   }
 
-  // The _buildAnimatedButton method remains mostly the same, ensuring the gradient is correct.
   Widget _buildAnimatedButton(String text, VoidCallback onPressed,
       {required bool isPrimary}) {
     return TweenAnimationBuilder<double>(
@@ -147,9 +148,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(27.5),
               gradient: isPrimary
-                  ? LinearGradient(
-                      // Pink gradient colors from the image
-                      colors: [Color(0xFF660033), Color(0xFF660033)], 
+                  ? const LinearGradient(
+                      // Use the defined color for consistency
+                      colors: [_primaryColor, _primaryColor], 
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     )

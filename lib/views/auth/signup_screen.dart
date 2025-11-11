@@ -43,7 +43,7 @@ class _SignupScreenState extends State<SignupScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Color(0xFFee403a)),
+          icon: Icon(Icons.arrow_back_ios, color: Color(0xFF660033)),
           onPressed: () {
             if (_authViewModel.currentStep > 0) {
               _previousStep();
@@ -55,7 +55,7 @@ class _SignupScreenState extends State<SignupScreen>
         title: LinearProgressIndicator(
           value: (_authViewModel.currentStep + 1) / 4,
           backgroundColor: Colors.grey[300],
-          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFee403a)),
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF660033)),
         ),
         centerTitle: true,
       ),
@@ -275,7 +275,7 @@ class _SignupScreenState extends State<SignupScreen>
         Text(
           'Step $step of 4',
           style: TextStyle(
-            color: Color(0xFFee403a),
+            color: Color(0xFF660033),
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
@@ -294,7 +294,7 @@ class _SignupScreenState extends State<SignupScreen>
           subtitle,
           style: TextStyle(
             fontSize: 16,
-            color: Colors.grey[600],
+            color: Colors.black,
           ),
         ),
       ],
@@ -318,14 +318,18 @@ class _SignupScreenState extends State<SignupScreen>
       maxLines: maxLines,
       validator: validator,
       onChanged: onChanged,
+      cursorColor: Colors.black,
+      style: TextStyle(color: Color(0xFF660033)),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Color(0xFFee403a)),
+        labelStyle: TextStyle(color: Color(0xFF660033)),
+        hintStyle: TextStyle(color: Colors.grey[500]),
+        prefixIcon: Icon(icon, color: Color(0xFF660033)),
         suffixIcon: isPassword
             ? IconButton(
           icon: Icon(
             isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-            color: Color(0xFFee403a),
+            color: Color(0xFF660033),
           ),
           onPressed: onVisibilityToggle,
         )
@@ -336,7 +340,7 @@ class _SignupScreenState extends State<SignupScreen>
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Color(0xFFee403a), width: 2),
+          borderSide: BorderSide(color: Color(0xFF660033), width: 2),
         ),
         filled: true,
         fillColor: Colors.grey[50],
@@ -354,7 +358,7 @@ class _SignupScreenState extends State<SignupScreen>
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 'Or sign up with',
-                style: TextStyle(color: Colors.grey[600]),
+                style: TextStyle(color: Colors.black),
               ),
             ),
             Expanded(child: Divider(color: Colors.grey[300])),
@@ -399,7 +403,7 @@ class _SignupScreenState extends State<SignupScreen>
       children: [
         Text(
           'I am',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
         ),
         SizedBox(height: 15),
         Wrap(
@@ -407,15 +411,15 @@ class _SignupScreenState extends State<SignupScreen>
           children: ['Man', 'Woman', 'Non-binary', 'Other'].map((gender) {
             final isSelected = _authViewModel.user.gender == gender;
             return FilterChip(
-              label: Text(gender),
+              label: Text(gender, style: TextStyle(color: Colors.white)),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
                   _authViewModel.user.gender = selected ? gender : null;
                 });
               },
-              selectedColor: Color(0xFFee403a).withOpacity(0.2),
-              checkmarkColor: Color(0xFFee403a),
+              selectedColor: Color(0xFF660033),
+              checkmarkColor: Colors.white,
             );
           }).toList(),
         ),
@@ -429,7 +433,7 @@ class _SignupScreenState extends State<SignupScreen>
       children: [
         Text(
           'Interested in',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
         ),
         SizedBox(height: 15),
         Wrap(
@@ -437,15 +441,15 @@ class _SignupScreenState extends State<SignupScreen>
           children: ['Men', 'Women', 'Non-binary', 'Everyone'].map((interest) {
             final isSelected = _authViewModel.user.interestedIn == interest;
             return FilterChip(
-              label: Text(interest),
+              label: Text(interest, style: TextStyle(color: Colors.white)),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
                   _authViewModel.user.interestedIn = selected ? interest : null;
                 });
               },
-              selectedColor: Color(0xFFee403a).withOpacity(0.2),
-              checkmarkColor: Color(0xFFee403a),
+              selectedColor: Color(0xFF660033),
+              checkmarkColor: Colors.white,
             );
           }).toList(),
         ),
@@ -459,7 +463,7 @@ class _SignupScreenState extends State<SignupScreen>
       children: [
         Text(
           'Date of Birth',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
         ),
         SizedBox(height: 15),
         GestureDetector(
@@ -473,7 +477,7 @@ class _SignupScreenState extends State<SignupScreen>
                 return Theme(
                   data: Theme.of(context).copyWith(
                     colorScheme: ColorScheme.light(
-                      primary: Color(0xFFee403a),
+                      primary: Color(0xFF660033),
                     ),
                   ),
                   child: child!,
@@ -496,7 +500,7 @@ class _SignupScreenState extends State<SignupScreen>
             ),
             child: Row(
               children: [
-                Icon(Icons.calendar_today, color: Color(0xFFee403a)),
+                Icon(Icons.calendar_today, color: Color(0xFF660033)),
                 SizedBox(width: 15),
                 Text(
                   _authViewModel.user.birthDate != null
@@ -525,7 +529,7 @@ class _SignupScreenState extends State<SignupScreen>
       children: [
         Text(
           'Location',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
         ),
         SizedBox(height: 15),
         TextFormField(
@@ -533,11 +537,15 @@ class _SignupScreenState extends State<SignupScreen>
           onChanged: (value) {
             _authViewModel.user.location = value;
           },
+          cursorColor: Colors.black,
+          style: TextStyle(color: Color(0xFF660033)),
           decoration: InputDecoration(
             labelText: 'Enter your city',
-            prefixIcon: Icon(Icons.location_on_outlined, color: Color(0xFFee403a)),
+            labelStyle: TextStyle(color: Color(0xFF660033)),
+            hintStyle: TextStyle(color: Colors.grey[500]),
+            prefixIcon: Icon(Icons.location_on_outlined, color: Color(0xFF660033)),
             suffixIcon: IconButton(
-              icon: Icon(Icons.my_location, color: Color(0xFFee403a)),
+              icon: Icon(Icons.my_location, color: Color(0xFF660033)),
               onPressed: () => _getCurrentLocation(locationController),
             ),
             border: OutlineInputBorder(
@@ -546,7 +554,7 @@ class _SignupScreenState extends State<SignupScreen>
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: Color(0xFFee403a), width: 2),
+              borderSide: BorderSide(color: Color(0xFF660033), width: 2),
             ),
             filled: true,
             fillColor: Colors.grey[50],
@@ -586,7 +594,7 @@ class _SignupScreenState extends State<SignupScreen>
               Text('Getting your location...'),
             ],
           ),
-          backgroundColor: Color(0xFFee403a),
+          backgroundColor: Color(0xFF660033),
           duration: Duration(seconds: 3),
         ),
       );
@@ -652,7 +660,7 @@ class _SignupScreenState extends State<SignupScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         title: Row(
           children: [
-            Icon(Icons.location_on, color: Color(0xFFee403a)),
+            Icon(Icons.location_on, color: Color(0xFF660033)),
             SizedBox(width: 10),
             Text('Location Permission'),
           ],
@@ -671,7 +679,7 @@ class _SignupScreenState extends State<SignupScreen>
               Geolocator.openAppSettings();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFee403a),
+              backgroundColor: Color(0xFF660033),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             child: Text('Settings', style: TextStyle(color: Colors.white)),
@@ -687,7 +695,7 @@ class _SignupScreenState extends State<SignupScreen>
       children: [
         Text(
           'Age Range: ${(_authViewModel.user.ageRange?.start ?? 18).round()} - ${(_authViewModel.user.ageRange?.end ?? 30).round()}',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
         ),
         SizedBox(height: 15),
         RangeSlider(
@@ -695,8 +703,8 @@ class _SignupScreenState extends State<SignupScreen>
           min: 18,
           max: 65,
           divisions: 47,
-          activeColor: Color(0xFFee403a),
-          inactiveColor: Color(0xFFee403a).withOpacity(0.3),
+          activeColor: Color(0xFF660033),
+          inactiveColor: Color(0xFF660033).withOpacity(0.3),
           onChanged: (values) {
             setState(() {
               _authViewModel.user.ageRange = values;
@@ -713,7 +721,7 @@ class _SignupScreenState extends State<SignupScreen>
       children: [
         Text(
           'Distance: ${(_authViewModel.user.distanceRange ?? 25).round()} km',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
         ),
         SizedBox(height: 15),
         Slider(
@@ -721,8 +729,8 @@ class _SignupScreenState extends State<SignupScreen>
           min: 1,
           max: 100,
           divisions: 99,
-          activeColor: Color(0xFFee403a),
-          inactiveColor: Color(0xFFee403a).withOpacity(0.3),
+          activeColor: Color(0xFF660033),
+          inactiveColor: Color(0xFF660033).withOpacity(0.3),
           onChanged: (value) {
             setState(() {
               _authViewModel.user.distanceRange = value;
@@ -739,7 +747,7 @@ class _SignupScreenState extends State<SignupScreen>
       children: [
         Text(
           'Looking for',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
         ),
         SizedBox(height: 15),
         Wrap(
@@ -748,15 +756,15 @@ class _SignupScreenState extends State<SignupScreen>
           children: ['Casual dating', 'Serious relationship', 'Marriage', 'Friendship', 'Not sure yet'].map((goal) {
             final isSelected = _authViewModel.user.relationshipGoals == goal;
             return FilterChip(
-              label: Text(goal),
+              label: Text(goal, style: TextStyle(color: Colors.white)),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
                   _authViewModel.user.relationshipGoals = selected ? goal : null;
                 });
               },
-              selectedColor: Color(0xFFee403a).withOpacity(0.2),
-              checkmarkColor: Color(0xFFee403a),
+              selectedColor: Color(0xFF660033),
+              checkmarkColor: Colors.white,
             );
           }).toList(),
         ),
@@ -775,7 +783,7 @@ class _SignupScreenState extends State<SignupScreen>
       children: [
         Text(
           'Interests (Select up to 5)',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
         ),
         SizedBox(height: 15),
         Wrap(
@@ -785,7 +793,7 @@ class _SignupScreenState extends State<SignupScreen>
             final userInterests = _authViewModel.user.interests ?? [];
             final isSelected = userInterests.contains(interest);
             return FilterChip(
-              label: Text(interest),
+              label: Text(interest, style: TextStyle(color: Colors.white)),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
@@ -797,8 +805,8 @@ class _SignupScreenState extends State<SignupScreen>
                   }
                 });
               },
-              selectedColor: Color(0xFFee403a).withOpacity(0.2),
-              checkmarkColor: Color(0xFFee403a),
+              selectedColor: Color(0xFF660033),
+              checkmarkColor: Colors.white,
             );
           }).toList(),
         ),
@@ -812,7 +820,7 @@ class _SignupScreenState extends State<SignupScreen>
       children: [
         Text(
           'Lifestyle',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
         ),
         SizedBox(height: 15),
         Wrap(
@@ -828,8 +836,8 @@ class _SignupScreenState extends State<SignupScreen>
                   _authViewModel.user.lifestyle = selected ? lifestyle : null;
                 });
               },
-              selectedColor: Color(0xFFee403a).withOpacity(0.2),
-              checkmarkColor: Color(0xFFee403a),
+              selectedColor: Color(0xFF660033).withOpacity(0.2),
+              checkmarkColor: Color(0xFF660033),
             );
           }).toList(),
         ),
@@ -847,7 +855,7 @@ class _SignupScreenState extends State<SignupScreen>
               child: OutlinedButton(
                 onPressed: _previousStep,
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Color(0xFFee403a)),
+                  side: BorderSide(color: Color(0xFF660033)),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -856,7 +864,7 @@ class _SignupScreenState extends State<SignupScreen>
                 child: Text(
                   'Back',
                   style: TextStyle(
-                    color: Color(0xFFee403a),
+                    color: Color(0xFF660033),
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -869,7 +877,7 @@ class _SignupScreenState extends State<SignupScreen>
             child: ElevatedButton(
               onPressed: _nextStep,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFee403a),
+                backgroundColor: Color(0xFF660033),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
