@@ -74,7 +74,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('No camera found on this device.'),
-              backgroundColor: Colors.red,
+              backgroundColor: Color(0xFF660033),
             ),
           );
         }
@@ -82,7 +82,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
       }
 
       final frontCamera = _cameras!.firstWhere(
-        (camera) => camera.lensDirection == CameraLensDirection.front,
+            (camera) => camera.lensDirection == CameraLensDirection.front,
         orElse: () => _cameras!.first,
       );
 
@@ -106,38 +106,38 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
                 _showPermissionDialog('Camera access was denied. Please enable it in settings.');
                 break;
               case 'CameraAccessDeniedWithoutPrompt':
-                 _showPermissionDialog('Camera access was denied. Please enable it in settings.');
+                _showPermissionDialog('Camera access was denied. Please enable it in settings.');
                 break;
               default:
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Error initializing camera: ${e.description}'),
-                    backgroundColor: Colors.red,
+                    backgroundColor: Color(0xFF660033),
                   ),
                 );
                 break;
             }
           } else {
-             ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('An unknown error occurred with the camera.'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('An unknown error occurred with the camera.'),
+                backgroundColor: Color(0xFF660033),
+              ),
+            );
           }
         }
       });
     } catch (e) {
-       if (mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Could not retrieve available cameras.'),
-              backgroundColor: Colors.red,
-            ),
-          );
-       }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not retrieve available cameras.'),
+            backgroundColor: Color(0xFF660033),
+          ),
+        );
+      }
     }
-     if (mounted) {
+    if (mounted) {
       setState(() {});
     }
   }
@@ -159,7 +159,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Color(0xFFee403a)),
+          icon: Icon(Icons.arrow_back_ios, color: Color(0xFF660033)),
           onPressed: () {
             if (_currentStep == 1 && (_isVerifying || _verificationComplete)) {
               // If on face verification step and process started, allow going back to reset
@@ -171,7 +171,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
             } else if (_currentStep == 0) {
               Navigator.pop(context);
             } else {
-               _pageController.previousPage(
+              _pageController.previousPage(
                 duration: Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
               );
@@ -181,7 +181,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
         title: LinearProgressIndicator(
           value: (_currentStep + 1) / 2,
           backgroundColor: Colors.grey[300],
-          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFee403a)),
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF660033)),
         ),
         centerTitle: true,
       ),
@@ -192,7 +192,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
           setState(() => _currentStep = index);
           if (index == 1 && (_cameraController == null || !_cameraController!.value.isInitialized)) {
             // If navigating to face verification and camera isn't ready, try initializing again.
-             _initializeCamera();
+            _initializeCamera();
           } else if (index == 0) {
             // If navigating back to image upload, ensure face verification state is reset.
             _resetFaceVerificationState();
@@ -205,13 +205,13 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
       ),
     );
   }
- void _resetFaceVerificationState() {
+  void _resetFaceVerificationState() {
     setState(() {
       _isVerifying = false;
       _verificationComplete = false;
       _capturedImagePath.value = "";
-       _pulseController.stop();
-       _pulseController.reset();
+      _pulseController.stop();
+      _pulseController.reset();
     });
     // Re-initialize camera if it was disposed or needs resetting
     if (_cameraController == null || !_cameraController!.value.isInitialized) {
@@ -220,7 +220,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
       // If controller exists but not streaming (e.g., after stopImageStream), re-initialize or re-start stream if needed.
       // For simplicity here, we re-initialize.
       _cameraController?.dispose().then((_) {
-         _initializeCamera();
+        _initializeCamera();
       });
     }
   }
@@ -235,7 +235,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
           Text(
             'Step 1 of 2',
             style: TextStyle(
-              color: Color(0xFFee403a),
+              color: Color(0xFF660033),
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
@@ -280,7 +280,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
             child: ElevatedButton(
               onPressed: _uploadedImages.length >= 2 ? _nextToFaceVerification : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFee403a),
+                backgroundColor: Color(0xFF660033),
                 disabledBackgroundColor: Colors.grey[300],
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
@@ -305,7 +305,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
   Widget _buildImageUploadCard(int index, bool hasImage) {
     // ... (Your existing _buildImageUploadCard code)
     // For brevity, assuming this part remains the same as your provided code
-     return TweenAnimationBuilder<double>(
+    return TweenAnimationBuilder<double>(
       tween: Tween<double>(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 300 + (index * 100)),
       builder: (context, value, child) {
@@ -315,13 +315,13 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: hasImage ? Color(0xFFee403a) : Colors.grey[300]!,
+                color: hasImage ? Color(0xFF660033) : Colors.grey[300]!,
                 width: 2,
               ),
-              color: hasImage ? Color(0xFFee403a).withOpacity(0.1) : Colors.grey[50],
+              color: hasImage ? Color(0xFF660033).withOpacity(0.1) : Colors.grey[50],
               boxShadow: hasImage ? [
                 BoxShadow(
-                  color: Color(0xFFee403a).withOpacity(0.2),
+                  color: Color(0xFF660033).withOpacity(0.2),
                   blurRadius: 10,
                   offset: Offset(0, 5),
                 )
@@ -385,7 +385,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
                         ),
                         child: Icon(
                           Icons.close,
-                          color: Colors.red,
+                          color: Color(0xFF660033),
                           size: 20,
                         ),
                       ),
@@ -400,12 +400,12 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: Color(0xFFee403a).withOpacity(0.1),
+                      color: Color(0xFF660033).withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.camera_alt,
-                      color: Color(0xFFee403a),
+                      color: Color(0xFF660033),
                       size: 30,
                     ),
                   ),
@@ -422,7 +422,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
                     Text(
                       'Required',
                       style: TextStyle(
-                        color: Color(0xFFee403a),
+                        color: Color(0xFF660033),
                         fontSize: 10,
                         fontWeight: FontWeight.w500,
                       ),
@@ -445,7 +445,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
           Text(
             'Step 2 of 2',
             style: TextStyle(
-              color: Color(0xFFee403a),
+              color: Color(0xFF660033),
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
@@ -487,14 +487,14 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
                               color: _verificationComplete
                                   ? Colors.green
                                   : (_isVerifying || _capturedImagePath.value.isNotEmpty)
-                                  ? Color(0xFFee403a)
+                                  ? Color(0xFF660033)
                                   : Colors.grey[300]!,
                               width: 4,
                             ),
                             color: Colors.grey[50],
                             boxShadow: (_isVerifying || _verificationComplete || _capturedImagePath.value.isNotEmpty) ? [
                               BoxShadow(
-                                color: (_verificationComplete ? Colors.green : Color(0xFFee403a))
+                                color: (_verificationComplete ? Colors.green : Color(0xFF660033))
                                     .withOpacity(0.3),
                                 blurRadius: 20,
                                 offset: Offset(0, 10),
@@ -502,26 +502,26 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
                             ] : [],
                           ),
                           child: ValueListenableBuilder<String>(
-                            valueListenable: _capturedImagePath,
-                            builder: (context, imagePath, child) {
-                              return FutureBuilder<void>(
-                                future: _initializeControllerFuture,
-                                builder: (context, snapshot) {
-                                  if (_verificationComplete) {
-                                    return Icon(Icons.check_circle, size: 80, color: Colors.green);
-                                  }
-                                  if (imagePath.isNotEmpty) {
-                                    return ClipOval(child: Image.file(File(imagePath), fit: BoxFit.cover, width: 250, height: 250));
-                                  }
-                                  if (snapshot.connectionState == ConnectionState.done &&
-                                      _cameraController != null &&
-                                      _cameraController!.value.isInitialized) {
-                                    return ClipOval(child: CameraPreview(_cameraController!));
-                                  }
-                                  return Icon(Icons.person_outline, size: 80, color: Colors.grey[400]);
-                                },
-                              );
-                            }
+                              valueListenable: _capturedImagePath,
+                              builder: (context, imagePath, child) {
+                                return FutureBuilder<void>(
+                                  future: _initializeControllerFuture,
+                                  builder: (context, snapshot) {
+                                    if (_verificationComplete) {
+                                      return Icon(Icons.check_circle, size: 80, color: Colors.green);
+                                    }
+                                    if (imagePath.isNotEmpty) {
+                                      return ClipOval(child: Image.file(File(imagePath), fit: BoxFit.cover, width: 250, height: 250));
+                                    }
+                                    if (snapshot.connectionState == ConnectionState.done &&
+                                        _cameraController != null &&
+                                        _cameraController!.value.isInitialized) {
+                                      return ClipOval(child: CameraPreview(_cameraController!));
+                                    }
+                                    return Icon(Icons.person_outline, size: 80, color: Colors.grey[400]);
+                                  },
+                                );
+                              }
                           ),
                         ),
                       );
@@ -529,31 +529,31 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
                   ),
                   SizedBox(height: 40),
                   ValueListenableBuilder<String>(
-                    valueListenable: _capturedImagePath,
-                    builder: (context, imagePath, child) {
-                      return Text(
-                        _verificationComplete
-                            ? 'Verification Complete!'
-                            : _isVerifying
-                                ? (imagePath.isNotEmpty ? 'Verifying... Hold still' : 'Capturing... Look at the camera')
-                                : 'Position your face in the circle',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: _verificationComplete
-                              ? Colors.green
+                      valueListenable: _capturedImagePath,
+                      builder: (context, imagePath, child) {
+                        return Text(
+                          _verificationComplete
+                              ? 'Verification Complete!'
                               : _isVerifying
-                                  ? Color(0xFFee403a)
-                                  : Colors.grey[600],
-                        ),
-                        textAlign: TextAlign.center,
-                      );
-                    }
+                              ? (imagePath.isNotEmpty ? 'Verifying... Hold still' : 'Capturing... Look at the camera')
+                              : 'Position your face in the circle',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: _verificationComplete
+                                ? Colors.green
+                                : _isVerifying
+                                ? Color(0xFF660033)
+                                : Colors.grey[600],
+                          ),
+                          textAlign: TextAlign.center,
+                        );
+                      }
                   ),
                   if (_isVerifying && _capturedImagePath.value.isEmpty) ...[ // Show progress only during "Capturing..."
                     SizedBox(height: 20),
                     CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFee403a)),
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF660033)),
                     ),
                   ],
                   if (_verificationComplete) ...[
@@ -585,10 +585,10 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
               onPressed: _verificationComplete
                   ? _completeVerification
                   : (_isVerifying || _cameraController == null || (_cameraController !=null && !_cameraController!.value.isInitialized))
-                      ? null // Disabled if verifying or camera not ready
-                      : _startFaceVerification,
+                  ? null // Disabled if verifying or camera not ready
+                  : _startFaceVerification,
               style: ElevatedButton.styleFrom(
-                backgroundColor: _verificationComplete ? Colors.green : Color(0xFFee403a),
+                backgroundColor: _verificationComplete ? Colors.green : Color(0xFF660033),
                 disabledBackgroundColor: Colors.grey[300],
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
@@ -599,8 +599,8 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
                 _verificationComplete
                     ? 'Continue to Dashboard'
                     : _isVerifying
-                        ? (_capturedImagePath.value.isNotEmpty ? 'Verifying...' : 'Capturing...')
-                        : 'Start Verification',
+                    ? (_capturedImagePath.value.isNotEmpty ? 'Verifying...' : 'Capturing...')
+                    : 'Start Verification',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -617,7 +617,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
   void _pickImage(int index) async {
     // ... (Your existing _pickImage method)
     // For brevity, assuming this part remains the same
-        showModalBottomSheet(
+    showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -632,7 +632,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFFee403a),
+                color: Color(0xFF660033),
               ),
             ),
             SizedBox(height: 20),
@@ -647,7 +647,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
                     icon: Icon(Icons.camera_alt, color: Colors.white),
                     label: Text('Camera', style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFee403a),
+                      backgroundColor: Color(0xFF660033),
                       padding: EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -665,7 +665,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
                     icon: Icon(Icons.photo_library, color: Colors.white),
                     label: Text('Gallery', style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFf86f54), // Slightly different color for gallery
+                      backgroundColor: Color(0xFF8B4562), // Slightly different shade for gallery
                       padding: EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -684,14 +684,14 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
   void _showPermissionDialog(String message) {
     // ... (Your existing _showPermissionDialog method)
     // For brevity, assuming this part remains the same
-        if (!mounted) return;
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         title: Row(
           children: [
-            Icon(Icons.security, color: Color(0xFFee403a)),
+            Icon(Icons.security, color: Color(0xFF660033)),
             SizedBox(width: 10),
             Text('Permission Required'),
           ],
@@ -708,7 +708,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
               openAppSettings();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFee403a),
+              backgroundColor: Color(0xFF660033),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             child: Text('Settings', style: TextStyle(color: Colors.white)),
@@ -721,7 +721,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
   void _pickImageFromSource(ImageSource source, int index) async {
     // ... (Your existing _pickImageFromSource method)
     // For brevity, assuming this part remains the same
-        try {
+    try {
       final XFile? image = await _picker.pickImage(
         source: source,
         maxWidth: 1080,
@@ -758,7 +758,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to pick image. Please try again.'),
-            backgroundColor: Colors.red,
+            backgroundColor: Color(0xFF660033),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -778,16 +778,16 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
     HapticFeedback.lightImpact();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Photo removed'),
-        backgroundColor: Colors.orange,
-        duration: Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+        SnackBar(
+          content: Text('Photo removed'),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 1),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
-      ),
-    );
+      );
     }
   }
 
@@ -796,13 +796,13 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
-     // Ensure camera is ready or initializing when moving to the face verification step
+    // Ensure camera is ready or initializing when moving to the face verification step
     if (_cameraController == null || (_cameraController != null && !_cameraController!.value.isInitialized)) {
       _initializeCamera();
     }
   }
 
- void _startFaceVerification() async {
+  void _startFaceVerification() async {
     if (_cameraController == null || !_cameraController!.value.isInitialized) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -860,8 +860,8 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
 
     } catch (e) {
       print('Error taking picture: $e');
-       _pulseController.stop();
-       _pulseController.reset();
+      _pulseController.stop();
+      _pulseController.reset();
       if (mounted) {
         setState(() {
           _isVerifying = false;
@@ -870,7 +870,7 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to capture image. Please try again.'),
-            backgroundColor: Colors.red,
+            backgroundColor: Color(0xFF660033),
           ),
         );
       }
@@ -895,24 +895,21 @@ class _UserVerificationScreenState extends State<UserVerificationScreen>
 
     // Dispose camera before navigating away
     _cameraController?.dispose().then((_) {
-        _cameraController = null;
-         if (mounted) {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => DashboardScreen()),
-            );
-        }
+      _cameraController = null;
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardScreen()),
+        );
+      }
     }).catchError((e) { // In case dispose fails, still navigate
-        print("Error disposing camera: $e");
-         if (mounted) {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => DashboardScreen()),
-            );
-        }
+      print("Error disposing camera: $e");
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardScreen()),
+        );
+      }
     });
-
-
   }
 }
-

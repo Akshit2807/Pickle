@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:lottie/lottie.dart'; // 👈 IMPORT LOTTIE
 import 'package:pickle/views/auth/signup_screen.dart';
 import 'package:pickle/views/auth/login_screen.dart';
+
+// Define the primary color (dark pink/purple) for consistency
+const Color _primaryColor = Color(0xFF660033);
 
 class WelcomeScreen extends StatefulWidget {
   @override
@@ -37,87 +40,94 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          color: Color(0xFFFECF67), // Updated background color
-        ),
-        child: SafeArea(
-          child: SlideTransition(
-            position: _slideAnimation,
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Welcome to Pickle',
-                        style: TextStyle(
-                          fontSize: 38,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black, // Updated text color
-                        ),
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: Column(
+            children: [
+              // 1. Top Section - Lottie Animation
+              // We use a flexible Spacer, then the Lottie, then another Spacer,
+              // to perfectly center the Lottie file horizontally and vertically
+              // within the top black area.
+              Spacer(flex: 10),
+
+              //REPLACED THE ICON WITH LOTTIE.ASSET
+              Lottie.asset(
+                'assets/lotties/welcome.json', //  file path
+                width: 600, // Adjust size as needed for your animation
+                height: 325,
+                fit: BoxFit.contain,
+                repeat: true, // Typically, welcome animations loop
+              ),
+
+              Spacer(flex: 10), // Ensures the Lottie takes up vertical space
+
+              // 2. Bottom Content Section (The actual text and buttons)
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Inclusive, reliable, safe.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-                      SizedBox(height: 10),
-                      Hero(
-                        tag: 'logo',
-                        child: Center(
-                          child: Image.asset(
-                            'assets/logo/logo_zoomed.png', // Assuming logo is suitable for new background
-                            width: 160,
-                            height: 160,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40),
-                        child: Text(
-                          '\"Because sometimes love comes in unexpected flavors\"',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black, // Updated text color
-                            height: 1.5,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 30),
-                    child: Column(
-                      children: [
-                        _buildAnimatedButton(
-                          'Create Account',
-                              () => Get.to(() => SignupScreen()),
-                          isPrimary: true,
-                        ),
-                        SizedBox(height: 15),
-                        _buildAnimatedButton(
-                          'Sign In',
-                              () => Get.to(() => LoginScreen()),
-                          isPrimary: false,
-                        ),
-                        SizedBox(height: 30),
-                        Text(
-                          'By continuing, you agree to our Terms of Service\nand Privacy Policy',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.black, // Updated text color
-                          ),
-                        ),
-                      ],
                     ),
-                  ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Go beyond your social circle & connect\nwith people near and far.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[400],
+                        height: 1.5,
+                      ),
+                    ),
+
+                    SizedBox(height: 50), // Increased spacing above the button for better look
+
+                    _buildAnimatedButton(
+                      'Next',
+                          () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignupScreen()),
+                      ),
+                      isPrimary: true,
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      'Already have an account?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    TextButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      ),
+                      child: Text(
+                        'Login',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 30), // Retain padding from the bottom edge
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -135,24 +145,33 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           child: Container(
             width: double.infinity,
             height: 55,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(27.5),
+              gradient: isPrimary
+                  ? const LinearGradient(
+                // Use the defined color for consistency
+                colors: [_primaryColor, _primaryColor],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              )
+                  : null,
+            ),
             child: ElevatedButton(
               onPressed: onPressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isPrimary ? Color(0xFFE74C3C) : Colors.transparent, // Deep green for primary
-                foregroundColor: isPrimary ? Colors.white : Colors.black, // White text for primary, black for secondary
-                elevation: isPrimary ? 8 : 0,
-                side: isPrimary ? null : BorderSide(color: Colors.black, width: 2), // Updated border color
+                backgroundColor: Colors.transparent,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                side: BorderSide.none,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(27.5),
                 ),
-                shadowColor: Colors.black26,
               ),
               child: Text(
                 text,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  // Color is inherited from foregroundColor
                 ),
               ),
             ),

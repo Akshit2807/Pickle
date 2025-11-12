@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:pickle/widgets/animations/floating_logo.dart'; // Adjusted import
+import 'package:pickle/views/auth/welcome_screen.dart'; // Will create this file next
 import 'package:get/get.dart';
-import 'package:pickle/widgets/animations/floating_logo.dart';
-import 'package:pickle/views/auth/welcome_screen.dart';
 import 'package:pickle/views/dashboard/dashboard_screen.dart';
 import 'package:pickle/controllers/auth_controller.dart';
 
@@ -79,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          color: Color(0xFFFECF67), // Updated background color
+          color: Color(0xFF400020), // Updated background color
         ),
         child: Stack(
           children: [
@@ -145,7 +145,7 @@ class _SplashScreenState extends State<SplashScreen>
                             style: TextStyle(
                               fontSize: 52,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black, // Updated text color
+                              color: Colors.white, // Updated text color
                               // Removed shadows as they might not look good with black text on this background
                             ),
                           ),
@@ -160,7 +160,7 @@ class _SplashScreenState extends State<SplashScreen>
                             'Find Your Perfect Match',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.black, // Updated text color
+                              color: Colors.white, // Updated text color
                               fontWeight: FontWeight.w300,
                             ),
                           ),
