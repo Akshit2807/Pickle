@@ -4,7 +4,6 @@ import 'package:pickle/views/auth/signup_screen.dart';
 import 'package:pickle/views/auth/login_screen.dart';
 
 // Define the primary color (dark pink/purple) for consistency
-const Color _primaryColor = Color(0xFF660033);
 
 class WelcomeScreen extends StatefulWidget {
   @override
@@ -39,8 +38,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: SlideTransition(
           position: _slideAnimation,
@@ -62,7 +62,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               ),
 
               Spacer(flex: 10), // Ensures the Lottie takes up vertical space
-
               // 2. Bottom Content Section (The actual text and buttons)
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 30),
@@ -72,28 +71,30 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     Text(
                       'Inclusive, reliable, safe.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 28,
+                      style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: theme.textTheme.bodyLarge?.color,
                       ),
                     ),
                     SizedBox(height: 10),
                     Text(
                       'Go beyond your social circle & connect\nwith people near and far.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[400],
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.textTheme.bodyMedium?.color?.withOpacity(
+                          0.7,
+                        ),
                         height: 1.5,
                       ),
                     ),
 
-                    SizedBox(height: 50), // Increased spacing above the button for better look
+                    SizedBox(
+                      height: 50,
+                    ), // Increased spacing above the button for better look
 
                     _buildAnimatedButton(
                       'Next',
-                          () => Navigator.push(
+                      () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => SignupScreen()),
                       ),
@@ -105,7 +106,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey,
+                        color: theme.textTheme.bodyMedium?.color?.withOpacity(
+                          0.6,
+                        ),
                       ),
                     ),
                     SizedBox(height: 5),
@@ -119,7 +122,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: theme.colorScheme.secondary,
                         ),
                       ),
                     ),
@@ -134,8 +137,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     );
   }
 
-  Widget _buildAnimatedButton(String text, VoidCallback onPressed,
-      {required bool isPrimary}) {
+  Widget _buildAnimatedButton(
+    String text,
+    VoidCallback onPressed, {
+    required bool isPrimary,
+  }) {
+    final theme = Theme.of(context);
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 600),
@@ -148,19 +155,19 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(27.5),
               gradient: isPrimary
-                  ? const LinearGradient(
-                // Use the defined color for consistency
-                colors: [_primaryColor, _primaryColor],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              )
+                  ? LinearGradient(
+                      // Use the defined color for consistency
+                      colors: [theme.primaryColor, theme.primaryColor],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    )
                   : null,
             ),
             child: ElevatedButton(
               onPressed: onPressed,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
-                foregroundColor: Colors.white,
+                foregroundColor: theme.colorScheme.onPrimary,
                 elevation: 0,
                 side: BorderSide.none,
                 shape: RoundedRectangleBorder(
@@ -169,10 +176,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               ),
               child: Text(
                 text,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
             ),
           ),

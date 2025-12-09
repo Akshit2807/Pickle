@@ -19,7 +19,17 @@ class _SignupScreenState extends State<SignupScreen>
   late AuthController _authController;
   late User _user;
 
-  final List<GlobalKey<FormState>> _formKeys = List.generate(4, (_) => GlobalKey<FormState>());
+  // Controllers for Basic Info Step
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneController;
+  late TextEditingController _passwordController;
+  late TextEditingController _confirmPasswordController;
+
+  final List<GlobalKey<FormState>> _formKeys = List.generate(
+    4,
+    (_) => GlobalKey<FormState>(),
+  );
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
@@ -32,23 +42,36 @@ class _SignupScreenState extends State<SignupScreen>
     _authController = Get.find<AuthController>();
     _user = User();
     _authController.resetSignupFlow();
+
+    // Initialize controllers
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _phoneController = TextEditingController();
+    _passwordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Color(0xFF660033)),
+          icon: Icon(Icons.arrow_back_ios, color: theme.iconTheme.color),
           onPressed: () {
             if (_authController.currentStep > 0) {
               _previousStep();
@@ -57,11 +80,13 @@ class _SignupScreenState extends State<SignupScreen>
             }
           },
         ),
-        title: Obx(() => LinearProgressIndicator(
-          value: (_authController.currentStep + 1) / 4,
-          backgroundColor: Colors.grey[300],
-          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF660033)),
-        )),
+        title: Obx(
+          () => LinearProgressIndicator(
+            value: (_authController.currentStep + 1) / 4,
+            backgroundColor: theme.dividerColor,
+            valueColor: AlwaysStoppedAnimation<Color>(theme.primaryColor),
+          ),
+        ),
         centerTitle: true,
       ),
       body: Column(
@@ -85,12 +110,6 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildBasicInfoStep() {
-    final nameController = TextEditingController(text: _user.name);
-    final emailController = TextEditingController(text: _user.email);
-    final phoneController = TextEditingController(text: _user.phone);
-    final passwordController = TextEditingController(text: _user.password);
-    final confirmPasswordController = TextEditingController();
-
     return SingleChildScrollView(
       padding: EdgeInsets.all(30),
       child: Form(
@@ -105,17 +124,18 @@ class _SignupScreenState extends State<SignupScreen>
             ),
             SizedBox(height: 30),
             _buildTextField(
-              controller: nameController,
+              controller: _nameController,
               label: 'First Name',
               icon: Icons.person_outline,
               onChanged: (value) {
                 _user.name = value;
               },
-              validator: (value) => value?.isEmpty == true ? 'Name is required' : null,
+              validator: (value) =>
+                  value?.isEmpty == true ? 'Name is required' : null,
             ),
             SizedBox(height: 20),
             _buildTextField(
-              controller: emailController,
+              controller: _emailController,
               label: 'Email',
               icon: Icons.email_outlined,
               onChanged: (value) {
@@ -123,7 +143,9 @@ class _SignupScreenState extends State<SignupScreen>
               },
               validator: (value) {
                 if (value?.isEmpty == true) return 'Email is required';
-                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+                if (!RegExp(
+                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                ).hasMatch(value!)) {
                   return 'Please enter a valid email';
                 }
                 return null;
@@ -131,7 +153,7 @@ class _SignupScreenState extends State<SignupScreen>
             ),
             SizedBox(height: 20),
             _buildTextField(
-              controller: phoneController,
+              controller: _phoneController,
               label: 'Phone Number (Optional)',
               icon: Icons.phone_outlined,
               onChanged: (value) {
@@ -140,7 +162,7 @@ class _SignupScreenState extends State<SignupScreen>
             ),
             SizedBox(height: 20),
             _buildTextField(
-              controller: passwordController,
+              controller: _passwordController,
               label: 'Password',
               icon: Icons.lock_outline,
               isPassword: true,
@@ -155,13 +177,14 @@ class _SignupScreenState extends State<SignupScreen>
               },
               validator: (value) {
                 if (value?.isEmpty == true) return 'Password is required';
-                if (value!.length < 6) return 'Password must be at least 6 characters';
+                if (value!.length < 6)
+                  return 'Password must be at least 6 characters';
                 return null;
               },
             ),
             SizedBox(height: 20),
             _buildTextField(
-              controller: confirmPasswordController,
+              controller: _confirmPasswordController,
               label: 'Confirm Password',
               icon: Icons.lock_outline,
               isPassword: true,
@@ -175,8 +198,10 @@ class _SignupScreenState extends State<SignupScreen>
                 // No need to store, just for validation
               },
               validator: (value) {
-                if (value?.isEmpty == true) return 'Please confirm your password';
-                if (value != passwordController.text) return 'Passwords do not match';
+                if (value?.isEmpty == true)
+                  return 'Please confirm your password';
+                if (value != _passwordController.text)
+                  return 'Passwords do not match';
                 return null;
               },
             ),
@@ -196,11 +221,7 @@ class _SignupScreenState extends State<SignupScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildStepHeader(
-              'About You',
-              'Help us get to know you better',
-              2,
-            ),
+            _buildStepHeader('About You', 'Help us get to know you better', 2),
             SizedBox(height: 30),
             _buildGenderSelection(),
             SizedBox(height: 30),
@@ -264,7 +285,9 @@ class _SignupScreenState extends State<SignupScreen>
               onChanged: (value) {
                 _user.bio = value;
               },
-              validator: (value) => value?.isEmpty == true ? 'Please tell us about yourself' : null,
+              validator: (value) => value?.isEmpty == true
+                  ? 'Please tell us about yourself'
+                  : null,
             ),
             SizedBox(height: 30),
             _buildInterestsSection(),
@@ -277,13 +300,14 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildStepHeader(String title, String subtitle, int step) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Step $step of 4',
           style: TextStyle(
-            color: Color(0xFF660033),
+            color: theme.colorScheme.secondary,
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
@@ -291,18 +315,16 @@ class _SignupScreenState extends State<SignupScreen>
         SizedBox(height: 8),
         Text(
           title,
-          style: TextStyle(
-            fontSize: 28,
+          style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: theme.textTheme.bodyLarge?.color,
           ),
         ),
         SizedBox(height: 4),
         Text(
           subtitle,
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.black,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: theme.textTheme.bodyMedium?.color,
           ),
         ),
       ],
@@ -320,56 +342,55 @@ class _SignupScreenState extends State<SignupScreen>
     String? Function(String?)? validator,
     void Function(String)? onChanged,
   }) {
+    final theme = Theme.of(context);
     return TextFormField(
       controller: controller,
       obscureText: isPassword && !isPasswordVisible,
       maxLines: maxLines,
       validator: validator,
       onChanged: onChanged,
-      cursorColor: Colors.black,
-      style: TextStyle(color: Color(0xFF660033)),
+      cursorColor: theme.colorScheme.secondary,
+      style: TextStyle(color: theme.textTheme.bodyLarge?.color),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Color(0xFF660033)),
-        hintStyle: TextStyle(color: Colors.grey[500]),
-        prefixIcon: Icon(icon, color: Color(0xFF660033)),
+        // labelStyle inherited from theme
+        // prefixIconColor inherited from theme
+        prefixIcon: Icon(icon),
         suffixIcon: isPassword
             ? IconButton(
-          icon: Icon(
-            isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-            color: Color(0xFF660033),
-          ),
-          onPressed: onVisibilityToggle,
-        )
+                icon: Icon(
+                  isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: theme.colorScheme.secondary,
+                ),
+                onPressed: onVisibilityToggle,
+              )
             : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: theme.dividerColor),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Color(0xFF660033), width: 2),
-        ),
+        // focusedBorder inherited from theme
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: theme.inputDecorationTheme.fillColor,
       ),
     );
   }
 
   Widget _buildSocialLoginSection() {
+    final theme = Theme.of(context);
     return Column(
       children: [
         Row(
           children: [
-            Expanded(child: Divider(color: Colors.grey[300])),
+            Expanded(child: Divider(color: theme.dividerColor)),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 'Or sign up with',
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: theme.textTheme.bodyMedium?.color),
               ),
             ),
-            Expanded(child: Divider(color: Colors.grey[300])),
+            Expanded(child: Divider(color: theme.dividerColor)),
           ],
         ),
         SizedBox(height: 20),
@@ -388,15 +409,23 @@ class _SignupScreenState extends State<SignupScreen>
     );
   }
 
-  Widget _buildSocialButton(String text, IconData icon, VoidCallback onPressed) {
+  Widget _buildSocialButton(
+    String text,
+    IconData icon,
+    VoidCallback onPressed,
+  ) {
+    final theme = Theme.of(context);
     return Container(
       height: 50,
       child: OutlinedButton.icon(
         onPressed: onPressed,
-        icon: Icon(icon, color: Colors.grey[700]),
-        label: Text(text, style: TextStyle(color: Colors.grey[700])),
+        icon: Icon(icon, color: theme.iconTheme.color),
+        label: Text(
+          text,
+          style: TextStyle(color: theme.textTheme.bodyMedium?.color),
+        ),
         style: OutlinedButton.styleFrom(
-          side: BorderSide(color: Colors.grey[300]!),
+          side: BorderSide(color: theme.dividerColor),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -406,12 +435,17 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildGenderSelection() {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'I am',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.bodyLarge?.color,
+          ),
         ),
         SizedBox(height: 15),
         Wrap(
@@ -419,15 +453,26 @@ class _SignupScreenState extends State<SignupScreen>
           children: ['Man', 'Woman', 'Non-binary', 'Other'].map((gender) {
             final isSelected = _user.gender == gender;
             return FilterChip(
-              label: Text(gender, style: TextStyle(color: isSelected ? Colors.white : Colors.black87)),
+              label: Text(
+                gender,
+                style: TextStyle(
+                  color: isSelected
+                      ? theme.colorScheme.onPrimary
+                      : theme.textTheme.bodyLarge?.color,
+                ),
+              ),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
                   _user.gender = selected ? gender : null;
                 });
               },
-              selectedColor: Color(0xFF660033),
-              checkmarkColor: Colors.white,
+              selectedColor: theme.primaryColor,
+              checkmarkColor: theme.colorScheme.onPrimary,
+              backgroundColor: theme.cardColor,
+              side: BorderSide(
+                color: const Color(0xFFF2AEBF).withValues(alpha: 0.3),
+              ),
             );
           }).toList(),
         ),
@@ -436,12 +481,17 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildInterestedInSelection() {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Interested in',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.bodyLarge?.color,
+          ),
         ),
         SizedBox(height: 15),
         Wrap(
@@ -449,15 +499,26 @@ class _SignupScreenState extends State<SignupScreen>
           children: ['Men', 'Women', 'Non-binary', 'Everyone'].map((interest) {
             final isSelected = _user.interestedIn == interest;
             return FilterChip(
-              label: Text(interest, style: TextStyle(color: isSelected ? Colors.white : Colors.black87)),
+              label: Text(
+                interest,
+                style: TextStyle(
+                  color: isSelected
+                      ? theme.colorScheme.onPrimary
+                      : theme.textTheme.bodyLarge?.color,
+                ),
+              ),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
                   _user.interestedIn = selected ? interest : null;
                 });
               },
-              selectedColor: Color(0xFF660033),
-              checkmarkColor: Colors.white,
+              selectedColor: theme.primaryColor,
+              checkmarkColor: theme.colorScheme.onPrimary,
+              backgroundColor: theme.cardColor,
+              side: BorderSide(
+                color: const Color(0xFFF2AEBF).withValues(alpha: 0.3),
+              ),
             );
           }).toList(),
         ),
@@ -466,12 +527,17 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildDatePicker() {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Date of Birth',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.bodyLarge?.color,
+          ),
         ),
         SizedBox(height: 15),
         GestureDetector(
@@ -483,9 +549,11 @@ class _SignupScreenState extends State<SignupScreen>
               lastDate: DateTime.now().subtract(Duration(days: 365 * 18)),
               builder: (context, child) {
                 return Theme(
-                  data: Theme.of(context).copyWith(
-                    colorScheme: ColorScheme.light(
-                      primary: Color(0xFF660033),
+                  data: theme.copyWith(
+                    textButtonTheme: TextButtonThemeData(
+                      style: TextButton.styleFrom(
+                        foregroundColor: const Color(0xFFF7F4F6), // offWhite
+                      ),
                     ),
                   ),
                   child: child!,
@@ -502,13 +570,17 @@ class _SignupScreenState extends State<SignupScreen>
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 18),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[300]!),
+              border: Border.all(
+                color: const Color(
+                  0xFFF2AEBF,
+                ).withValues(alpha: 0.4), // burgundySwatch[200]
+              ),
               borderRadius: BorderRadius.circular(15),
-              color: Colors.grey[50],
+              color: theme.inputDecorationTheme.fillColor,
             ),
             child: Row(
               children: [
-                Icon(Icons.calendar_today, color: Color(0xFF660033)),
+                Icon(Icons.calendar_today, color: theme.colorScheme.secondary),
                 SizedBox(width: 15),
                 Text(
                   _user.birthDate != null
@@ -517,8 +589,8 @@ class _SignupScreenState extends State<SignupScreen>
                   style: TextStyle(
                     fontSize: 16,
                     color: _user.birthDate != null
-                        ? Colors.black87
-                        : Colors.grey[600],
+                        ? theme.textTheme.bodyLarge?.color
+                        : theme.hintColor,
                   ),
                 ),
               ],
@@ -531,13 +603,18 @@ class _SignupScreenState extends State<SignupScreen>
 
   Widget _buildLocationField() {
     final locationController = TextEditingController(text: _user.location);
+    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Location',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.bodyLarge?.color,
+          ),
         ),
         SizedBox(height: 15),
         TextFormField(
@@ -545,27 +622,24 @@ class _SignupScreenState extends State<SignupScreen>
           onChanged: (value) {
             _user.location = value;
           },
-          cursorColor: Colors.black,
-          style: TextStyle(color: Color(0xFF660033)),
+          cursorColor: theme.colorScheme.secondary,
+          style: TextStyle(color: theme.textTheme.bodyLarge?.color),
           decoration: InputDecoration(
             labelText: 'Enter your city',
-            labelStyle: TextStyle(color: Color(0xFF660033)),
-            hintStyle: TextStyle(color: Colors.grey[500]),
-            prefixIcon: Icon(Icons.location_on_outlined, color: Color(0xFF660033)),
+            // labelStyle inherited from theme
+            // prefixIconColor inherited from theme
+            prefixIcon: Icon(Icons.location_on_outlined),
             suffixIcon: IconButton(
-              icon: Icon(Icons.my_location, color: Color(0xFF660033)),
+              icon: Icon(Icons.my_location, color: theme.colorScheme.secondary),
               onPressed: () => _getCurrentLocation(locationController),
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: theme.dividerColor),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: Color(0xFF660033), width: 2),
-            ),
+            // focusedBorder inherited from theme
             filled: true,
-            fillColor: Colors.grey[50],
+            fillColor: theme.inputDecorationTheme.fillColor,
           ),
         ),
       ],
@@ -573,6 +647,7 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   void _getCurrentLocation(TextEditingController controller) async {
+    final theme = Theme.of(context);
     try {
       // Check and request location permission
       LocationPermission permission = await Geolocator.checkPermission();
@@ -602,7 +677,7 @@ class _SignupScreenState extends State<SignupScreen>
               Text('Getting your location...'),
             ],
           ),
-          backgroundColor: Color(0xFF660033),
+          backgroundColor: theme.primaryColor,
           duration: Duration(seconds: 3),
         ),
       );
@@ -625,7 +700,8 @@ class _SignupScreenState extends State<SignupScreen>
         if (place.locality != null && place.locality!.isNotEmpty) {
           address += place.locality!;
         }
-        if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
+        if (place.administrativeArea != null &&
+            place.administrativeArea!.isNotEmpty) {
           if (address.isNotEmpty) address += ', ';
           address += place.administrativeArea!;
         }
@@ -643,7 +719,7 @@ class _SignupScreenState extends State<SignupScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Location updated successfully! 📍'),
-            backgroundColor: Color(0xFF660033),
+            backgroundColor: theme.primaryColor,
             behavior: SnackBarBehavior.fixed,
             duration: Duration(seconds: 2),
           ),
@@ -662,24 +738,35 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   void _showLocationPermissionDialog() {
+    final theme = Theme.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        backgroundColor: theme.cardColor,
         title: Row(
           children: [
-            Icon(Icons.location_on, color: Color(0xFF660033)),
+            Icon(Icons.location_on, color: theme.colorScheme.secondary),
             SizedBox(width: 10),
-            Text('Location Permission'),
+            Text(
+              'Location Permission',
+              style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+            ),
           ],
         ),
         content: Text(
           'Location access is required to find matches near you. Please enable location permission in settings.',
+          style: TextStyle(color: theme.textTheme.bodyMedium?.color),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -687,10 +774,15 @@ class _SignupScreenState extends State<SignupScreen>
               Geolocator.openAppSettings();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF660033),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              backgroundColor: theme.primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-            child: Text('Settings', style: TextStyle(color: Colors.white)),
+            child: Text(
+              'Settings',
+              style: TextStyle(color: theme.colorScheme.onPrimary),
+            ),
           ),
         ],
       ),
@@ -698,12 +790,17 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildAgeRangeSlider() {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Age Range: ${(_user.ageRange?.start ?? 18).round()} - ${(_user.ageRange?.end ?? 30).round()}',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.bodyLarge?.color,
+          ),
         ),
         SizedBox(height: 15),
         RangeSlider(
@@ -711,8 +808,8 @@ class _SignupScreenState extends State<SignupScreen>
           min: 18,
           max: 65,
           divisions: 47,
-          activeColor: Color(0xFF660033),
-          inactiveColor: Color(0xFF660033).withOpacity(0.3),
+          activeColor: theme.primaryColor,
+          inactiveColor: theme.primaryColor.withOpacity(0.3),
           onChanged: (values) {
             setState(() {
               _user.ageRange = values;
@@ -724,12 +821,17 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildDistanceSlider() {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Distance: ${(_user.distanceRange ?? 25).round()} km',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.bodyLarge?.color,
+          ),
         ),
         SizedBox(height: 15),
         Slider(
@@ -737,8 +839,8 @@ class _SignupScreenState extends State<SignupScreen>
           min: 1,
           max: 100,
           divisions: 99,
-          activeColor: Color(0xFF660033),
-          inactiveColor: Color(0xFF660033).withOpacity(0.3),
+          activeColor: theme.primaryColor,
+          inactiveColor: theme.primaryColor.withOpacity(0.3),
           onChanged: (value) {
             setState(() {
               _user.distanceRange = value;
@@ -750,40 +852,74 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildRelationshipGoals() {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Looking for',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.bodyLarge?.color,
+          ),
         ),
         SizedBox(height: 15),
         Wrap(
           spacing: 10,
           runSpacing: 10,
-          children: ['Casual dating', 'Serious relationship', 'Marriage', 'Friendship', 'Not sure yet'].map((goal) {
-            final isSelected = _user.relationshipGoals == goal;
-            return FilterChip(
-              label: Text(goal ,style: TextStyle(color: isSelected ? Colors.white : Colors.black87)),
-              selected: isSelected,
-              onSelected: (selected) {
-                setState(() {
-                  _user.relationshipGoals = selected ? goal : null;
-                });
-              },
-              selectedColor: Color(0xFF660033),
-              checkmarkColor: Colors.white,
-            );
-          }).toList(),
+          children:
+              [
+                'Casual dating',
+                'Serious relationship',
+                'Marriage',
+                'Friendship',
+                'Not sure yet',
+              ].map((goal) {
+                final isSelected = _user.relationshipGoals == goal;
+                return FilterChip(
+                  label: Text(
+                    goal,
+                    style: TextStyle(
+                      color: isSelected
+                          ? theme.colorScheme.onPrimary
+                          : theme.textTheme.bodyLarge?.color,
+                    ),
+                  ),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    setState(() {
+                      _user.relationshipGoals = selected ? goal : null;
+                    });
+                  },
+                  selectedColor: theme.primaryColor,
+                  checkmarkColor: theme.colorScheme.onPrimary,
+                  backgroundColor: theme.cardColor,
+                  side: BorderSide(
+                    color: const Color(0xFFF2AEBF).withValues(alpha: 0.3),
+                  ),
+                );
+              }).toList(),
         ),
       ],
     );
   }
 
   Widget _buildInterestsSection() {
+    final theme = Theme.of(context);
     final interests = [
-      'Travel', 'Music', 'Photography', 'Fitness', 'Cooking', 'Reading',
-      'Movies', 'Art', 'Sports', 'Gaming', 'Dancing', 'Technology'
+      'Travel',
+      'Music',
+      'Photography',
+      'Fitness',
+      'Cooking',
+      'Reading',
+      'Movies',
+      'Art',
+      'Sports',
+      'Gaming',
+      'Dancing',
+      'Technology',
     ];
 
     return Column(
@@ -791,7 +927,11 @@ class _SignupScreenState extends State<SignupScreen>
       children: [
         Text(
           'Interests (Select up to 5)',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.bodyLarge?.color,
+          ),
         ),
         SizedBox(height: 15),
         Wrap(
@@ -801,7 +941,14 @@ class _SignupScreenState extends State<SignupScreen>
             final userInterests = _user.interests ?? [];
             final isSelected = userInterests.contains(interest);
             return FilterChip(
-              label: Text(interest, style: TextStyle( color: isSelected ? Colors.white : Colors.black87)),
+              label: Text(
+                interest,
+                style: TextStyle(
+                  color: isSelected
+                      ? theme.colorScheme.onPrimary
+                      : theme.textTheme.bodyLarge?.color,
+                ),
+              ),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
@@ -809,12 +956,18 @@ class _SignupScreenState extends State<SignupScreen>
                   if (selected && currentInterests.length < 5) {
                     _user.interests = [...currentInterests, interest];
                   } else if (!selected) {
-                    _user.interests = currentInterests.where((i) => i != interest).toList();
+                    _user.interests = currentInterests
+                        .where((i) => i != interest)
+                        .toList();
                   }
                 });
               },
-              selectedColor: Color(0xFF660033),
-              checkmarkColor: Colors.white,
+              selectedColor: theme.primaryColor,
+              checkmarkColor: theme.colorScheme.onPrimary,
+              backgroundColor: theme.cardColor,
+              side: BorderSide(
+                color: const Color(0xFFF2AEBF).withValues(alpha: 0.3),
+              ),
             );
           }).toList(),
         ),
@@ -823,94 +976,130 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildLifestyleSection() {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Lifestyle',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.bodyLarge?.color,
+          ),
         ),
         SizedBox(height: 15),
         Wrap(
           spacing: 10,
           runSpacing: 10,
-          children: ['Non-smoker', 'Smoker', 'Social drinker', 'Non-drinker', 'Pet lover', 'No pets'].map((lifestyle) {
-            final isSelected = _user.lifestyle == lifestyle;
-            return FilterChip(
-              label: Text(lifestyle),
-              selected: isSelected,
-              onSelected: (selected) {
-                setState(() {
-                  _user.lifestyle = selected ? lifestyle : null;
-                });
-              },
-              selectedColor: Color(0xFF660033).withOpacity(0.2),
-              checkmarkColor: Color(0xFF660033),
-            );
-          }).toList(),
+          children:
+              [
+                'Non-smoker',
+                'Smoker',
+                'Social drinker',
+                'Non-drinker',
+                'Pet lover',
+                'No pets',
+              ].map((lifestyle) {
+                final isSelected = _user.lifestyle == lifestyle;
+                return FilterChip(
+                  label: Text(
+                    lifestyle,
+                    style: TextStyle(
+                      color: isSelected
+                          ? theme.colorScheme.onPrimary
+                          : theme.textTheme.bodyLarge?.color,
+                    ),
+                  ),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    setState(() {
+                      _user.lifestyle = selected ? lifestyle : null;
+                    });
+                  },
+                  selectedColor: theme.primaryColor,
+                  checkmarkColor: theme.colorScheme.onPrimary,
+                  backgroundColor: theme.cardColor,
+                  side: BorderSide(
+                    color: const Color(0xFFF2AEBF).withValues(alpha: 0.3),
+                  ),
+                );
+              }).toList(),
         ),
       ],
     );
   }
 
   Widget _buildBottomNavigation() {
-    return Obx(() => Container(
-      padding: EdgeInsets.all(20),
-      child: Row(
-        children: [
-          if (_authController.currentStep > 0)
+    final theme = Theme.of(context);
+    return Obx(
+      () => Container(
+        padding: EdgeInsets.all(20),
+        child: Row(
+          children: [
+            if (_authController.currentStep > 0)
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: _isSubmitting ? null : _previousStep,
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                      color: const Color(
+                        0xFFF2AEBF,
+                      ).withValues(alpha: 0.4), // burgundySwatch[200]
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                  ),
+                  child: Text(
+                    'Back',
+                    style: TextStyle(
+                      color: theme.colorScheme.secondary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            if (_authController.currentStep > 0) SizedBox(width: 15),
             Expanded(
-              child: OutlinedButton(
-                onPressed: _isSubmitting ? null : _previousStep,
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Color(0xFF660033)),
+              flex: 2,
+              child: ElevatedButton(
+                onPressed: _isSubmitting ? null : _nextStep,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.primaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                   padding: EdgeInsets.symmetric(vertical: 15),
+                  elevation: 5,
                 ),
-                child: Text(
-                  'Back',
-                  style: TextStyle(
-                    color: Color(0xFF660033),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          if (_authController.currentStep > 0) SizedBox(width: 15),
-          Expanded(
-            flex: 2,
-            child: ElevatedButton(
-              onPressed: _isSubmitting ? null : _nextStep,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF660033),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                padding: EdgeInsets.symmetric(vertical: 15),
-                elevation: 5,
-              ),
-              child: _isSubmitting
-                  ? CircularProgressIndicator(color: Colors.white)
-                  : Text(
-                      _authController.currentStep == 3 ? 'Complete' : 'Continue',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                child: _isSubmitting
+                    ? CircularProgressIndicator(
+                        color: theme.colorScheme.onPrimary,
+                      )
+                    : Text(
+                        _authController.currentStep == 3
+                            ? 'Complete'
+                            : 'Continue',
+                        style: TextStyle(
+                          color: theme.colorScheme.onPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   void _nextStep() async {
-    if (_formKeys[_authController.currentStep].currentState?.validate() ?? true) {
+    if (_formKeys[_authController.currentStep].currentState?.validate() ??
+        true) {
       if (_authController.currentStep < 3) {
         _authController.nextStep();
         _pageController.nextPage(
@@ -925,11 +1114,10 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Future<void> _completeSignup() async {
+    final theme = Theme.of(context);
     setState(() => _isSubmitting = true);
 
-    final success = await _authController.signUp(
-      user: _user,
-    );
+    final success = await _authController.signUp(user: _user);
 
     setState(() => _isSubmitting = false);
 
@@ -940,8 +1128,8 @@ class _SignupScreenState extends State<SignupScreen>
         'Success',
         'Welcome to Pickle! Your account has been created.',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Color(0xFF660033),
-        colorText: Colors.white,
+        backgroundColor: theme.primaryColor,
+        colorText: theme.colorScheme.onPrimary,
         duration: Duration(seconds: 3),
       );
     }

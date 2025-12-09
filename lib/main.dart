@@ -32,6 +32,20 @@ class PickleApp extends StatelessWidget {
     const Color offWhite = Color(0xFFF7F4F6);
     const Color gold = Color(0xFFC5A46D);
 
+    // Define the Custom Burgundy Swatch
+    const MaterialColor burgundySwatch = MaterialColor(0xFF660033, {
+      50: Color(0xFFFCEBEE),
+      100: Color(0xFFF8CED8),
+      200: Color(0xFFF2AEBF),
+      300: Color(0xFFE889A3),
+      400: Color(0xFFD95E82),
+      500: Color(0xFF660033),
+      600: Color(0xFF5A002D),
+      700: Color(0xFF4B0025),
+      800: Color(0xFF3D001D),
+      900: Color(0xFF2A0013),
+    });
+
     // --- LIGHT THEME ---
     final ThemeData lightTheme = ThemeData(
       brightness: Brightness.light,
@@ -42,18 +56,7 @@ class PickleApp extends StatelessWidget {
       highlightColor: blushPink.withValues(alpha: 0.4),
       splashColor: blushPink.withValues(alpha: 0.3),
 
-      primarySwatch: MaterialColor(0xFF660033, {
-        50: Color(0xFFFCEBEE),
-        100: Color(0xFFF8CED8),
-        200: Color(0xFFF2AEBF),
-        300: Color(0xFFE889A3),
-        400: Color(0xFFD95E82),
-        500: Color(0xFF660033),
-        600: Color(0xFF5A002D),
-        700: Color(0xFF4B0025),
-        800: Color(0xFF3D001D),
-        900: Color(0xFF2A0013),
-      }),
+      primarySwatch: burgundySwatch,
 
       appBarTheme: AppBarTheme(
         backgroundColor: burgundy,
@@ -68,10 +71,9 @@ class PickleApp extends StatelessWidget {
       ),
 
       textTheme: GoogleFonts.signikaTextTheme(
-        Theme.of(context).textTheme.apply(
-          bodyColor: charcoalPlum,
-          displayColor: charcoalPlum,
-        ),
+        Theme.of(
+          context,
+        ).textTheme.apply(bodyColor: charcoalPlum, displayColor: charcoalPlum),
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -82,10 +84,7 @@ class PickleApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
           ),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 22),
-          textStyle: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-          ),
+          textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
         ),
       ),
 
@@ -128,77 +127,92 @@ class PickleApp extends StatelessWidget {
     // --- DARK THEME ---
     final ThemeData darkTheme = ThemeData(
       brightness: Brightness.dark,
-      primaryColor: gold,
-      scaffoldBackgroundColor: const Color(0xFF1E1A1D),
+      primaryColor: burgundy, // Keep brand color for buttons/appbar
+      scaffoldBackgroundColor: const Color.fromARGB(255, 0, 0, 0),
       cardColor: charcoalPlum,
       hintColor: blushPink.withValues(alpha: 0.7),
-      highlightColor: gold.withValues(alpha: 0.4),
-      splashColor: gold.withValues(alpha: 0.3),
+      highlightColor: burgundySwatch[300]!.withValues(alpha: 0.4),
+      splashColor: burgundySwatch[300]!.withValues(alpha: 0.3),
+
+      colorScheme: ColorScheme.dark(
+        primary: burgundy,
+        onPrimary: offWhite,
+        secondary: offWhite, // Changed to offWhite as requested
+        onSecondary: burgundy,
+        surface: charcoalPlum,
+        onSurface: offWhite,
+        error: Colors.redAccent,
+        onError: Colors.white,
+      ),
+
+      primarySwatch: burgundySwatch,
 
       appBarTheme: AppBarTheme(
         backgroundColor: charcoalPlum,
         foregroundColor: offWhite,
+        elevation: 0,
         titleTextStyle: GoogleFonts.signika(
-          color: gold,
+          color: offWhite,
           fontSize: 20,
           fontWeight: FontWeight.w600,
         ),
-        iconTheme: const IconThemeData(color: gold),
+        iconTheme: IconThemeData(color: offWhite), // Use offWhite for icons
       ),
 
       textTheme: GoogleFonts.signikaTextTheme(
-        Theme.of(context).textTheme.apply(
-          bodyColor: offWhite,
-          displayColor: offWhite,
-        ),
+        Theme.of(
+          context,
+        ).textTheme.apply(bodyColor: offWhite, displayColor: offWhite),
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: gold,
-          foregroundColor: charcoalPlum,
+          backgroundColor: burgundy,
+          foregroundColor: offWhite,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 22),
-          textStyle: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-          ),
+          textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
         ),
       ),
 
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: gold,
-        foregroundColor: charcoalPlum,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: burgundySwatch[400],
+        foregroundColor: offWhite,
       ),
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: charcoalPlum.withValues(alpha: 0.4),
         hintStyle: TextStyle(color: offWhite.withValues(alpha: 0.6)),
+        labelStyle: TextStyle(color: burgundySwatch[100]), // Light label
+        prefixIconColor: burgundySwatch[100], // Light icon
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: gold, width: 2),
+          borderSide: BorderSide(color: burgundySwatch[300]!, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: gold.withValues(alpha: 0.4), width: 1),
+          borderSide: BorderSide(
+            color: burgundySwatch[200]!.withValues(alpha: 0.4),
+            width: 1,
+          ),
         ),
       ),
 
-      dividerColor: gold.withValues(alpha: 0.3),
-      iconTheme: const IconThemeData(color: gold),
+      dividerColor: burgundySwatch[200]!.withValues(alpha: 0.3),
+      iconTheme: IconThemeData(color: burgundySwatch[100]),
 
-      snackBarTheme: const SnackBarThemeData(
+      snackBarTheme: SnackBarThemeData(
         backgroundColor: charcoalPlum,
         contentTextStyle: TextStyle(color: offWhite),
-        actionTextColor: gold,
+        actionTextColor: burgundySwatch[100],
       ),
 
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: charcoalPlum,
-        selectedItemColor: gold,
+        selectedItemColor: burgundySwatch[100],
         unselectedItemColor: offWhite.withValues(alpha: 0.5),
         showUnselectedLabels: false,
       ),
@@ -210,7 +224,7 @@ class PickleApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.system, // auto-switch based on device setting
+      themeMode: ThemeMode.dark, // auto-switch based on device setting
       home: SplashScreen(),
     );
   }

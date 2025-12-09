@@ -45,13 +45,14 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Color(0xFF660033)),
+          icon: Icon(Icons.arrow_back_ios, color: theme.iconTheme.color),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -67,18 +68,16 @@ class _LoginScreenState extends State<LoginScreen>
                 SizedBox(height: 20),
                 Text(
                   'Welcome Back!',
-                  style: TextStyle(
-                    fontSize: 32,
+                  style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF660033),
+                    color: theme.colorScheme.secondary,
                   ),
                 ),
                 SizedBox(height: 8),
                 Text(
                   'Sign in to continue your journey',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[600],
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                   ),
                 ),
                 SizedBox(height: 40),
@@ -116,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen>
                     },
                     child: Text(
                       'Forgot Password?',
-                      style: TextStyle(color: Color(0xFF660033)),
+                      style: TextStyle(color: theme.colorScheme.secondary),
                     ),
                   ),
                 ),
@@ -133,14 +132,18 @@ class _LoginScreenState extends State<LoginScreen>
                     children: [
                       Text(
                         "Don't have an account? ",
-                        style: TextStyle(color: Colors.grey[600]),
+                        style: TextStyle(
+                          color: theme.textTheme.bodyMedium?.color?.withOpacity(
+                            0.7,
+                          ),
+                        ),
                       ),
                       GestureDetector(
                         onTap: () => Get.off(() => SignupScreen()),
                         child: Text(
                           'Sign Up',
                           style: TextStyle(
-                            color: Color(0xFF660033),
+                            color: theme.colorScheme.secondary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -163,40 +166,38 @@ class _LoginScreenState extends State<LoginScreen>
     bool isPassword = false,
     String? Function(String?)? validator,
   }) {
+    final theme = Theme.of(context);
     return TextFormField(
       controller: controller,
       obscureText: isPassword && !_isPasswordVisible,
       validator: validator,
-      cursorColor: Colors.black,
-      style: TextStyle(color: Color(0xFF660033)),
+      cursorColor: theme.colorScheme.secondary,
+      style: TextStyle(color: theme.textTheme.bodyLarge?.color),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Color(0xFF660033)),
-        hintStyle: TextStyle(color: Colors.grey[500]),
-        prefixIcon: Icon(icon, color: Color(0xFF660033)),
+        // labelStyle inherited from theme
+        // prefixIconColor inherited from theme
+        prefixIcon: Icon(icon),
         suffixIcon: isPassword
             ? IconButton(
-          icon: Icon(
-            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-            color: Color(0xFF660033),
-          ),
-          onPressed: () {
-            setState(() {
-              _isPasswordVisible = !_isPasswordVisible;
-            });
-          },
-        )
+                icon: Icon(
+                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: theme.colorScheme.secondary,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isPasswordVisible = !_isPasswordVisible;
+                  });
+                },
+              )
             : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: theme.dividerColor),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Color(0xFF660033), width: 2),
-        ),
+        // focusedBorder inherited from theme
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: theme.inputDecorationTheme.fillColor,
       ),
     );
   }
@@ -208,7 +209,6 @@ class _LoginScreenState extends State<LoginScreen>
       child: ElevatedButton(
         onPressed: _isLoading ? null : _handleLogin,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFF660033),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -217,13 +217,13 @@ class _LoginScreenState extends State<LoginScreen>
         child: _isLoading
             ? CircularProgressIndicator(color: Colors.white)
             : Text(
-          'Sign In',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
+                'Sign In',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  // color inherited from theme (onPrimary)
+                ),
+              ),
       ),
     );
   }
@@ -231,15 +231,19 @@ class _LoginScreenState extends State<LoginScreen>
   Widget _buildDivider() {
     return Row(
       children: [
-        Expanded(child: Divider(color: Colors.grey[300])),
+        Expanded(child: Divider(color: Theme.of(context).dividerColor)),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             'Or continue with',
-            style: TextStyle(color: Colors.grey[600]),
+            style: TextStyle(
+              color: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+            ),
           ),
         ),
-        Expanded(child: Divider(color: Colors.grey[300])),
+        Expanded(child: Divider(color: Theme.of(context).dividerColor)),
       ],
     );
   }
@@ -248,39 +252,39 @@ class _LoginScreenState extends State<LoginScreen>
     return Row(
       children: [
         Expanded(
-          child: _buildSocialButton(
-            'Google',
-            Icons.g_mobiledata,
-                () {
-              // TODO: Implement Google login
-              _showComingSoonSnackBar('Google Sign In');
-            },
-          ),
+          child: _buildSocialButton('Google', Icons.g_mobiledata, () {
+            // TODO: Implement Google login
+            _showComingSoonSnackBar('Google Sign In');
+          }),
         ),
         SizedBox(width: 15),
         Expanded(
-          child: _buildSocialButton(
-            'Facebook',
-            Icons.facebook,
-                () {
-              // TODO: Implement Facebook login
-              _showComingSoonSnackBar('Facebook Sign In');
-            },
-          ),
+          child: _buildSocialButton('Facebook', Icons.facebook, () {
+            // TODO: Implement Facebook login
+            _showComingSoonSnackBar('Facebook Sign In');
+          }),
         ),
       ],
     );
   }
 
-  Widget _buildSocialButton(String text, IconData icon, VoidCallback onPressed) {
+  Widget _buildSocialButton(
+    String text,
+    IconData icon,
+    VoidCallback onPressed,
+  ) {
+    final theme = Theme.of(context);
     return Container(
       height: 50,
       child: OutlinedButton.icon(
         onPressed: onPressed,
-        icon: Icon(icon, color: Colors.grey[700]),
-        label: Text(text, style: TextStyle(color: Colors.grey[700])),
+        icon: Icon(icon, color: theme.iconTheme.color),
+        label: Text(
+          text,
+          style: TextStyle(color: theme.textTheme.bodyMedium?.color),
+        ),
         style: OutlinedButton.styleFrom(
-          side: BorderSide(color: Colors.grey[300]!),
+          side: BorderSide(color: theme.dividerColor),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -319,20 +323,20 @@ class _LoginScreenState extends State<LoginScreen>
 
   void _showForgotPasswordDialog() {
     final emailController = TextEditingController();
+    final theme = Theme.of(context);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: theme.cardColor,
         title: Row(
           children: [
-            Icon(Icons.lock_reset, color: Color(0xFF660033)),
+            Icon(Icons.lock_reset, color: theme.colorScheme.secondary),
             SizedBox(width: 10),
             Text(
               'Reset Password',
-              style: TextStyle(color: Color(0xFF660033)),
+              style: TextStyle(color: theme.colorScheme.secondary),
             ),
           ],
         ),
@@ -341,24 +345,32 @@ class _LoginScreenState extends State<LoginScreen>
           children: [
             Text(
               'Enter your email address and we\'ll send you a link to reset your password.',
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(
+                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+              ),
             ),
             SizedBox(height: 20),
             TextFormField(
               controller: emailController,
-              cursorColor: Colors.black,
-              style: TextStyle(color: Color(0xFF660033)),
+              cursorColor: theme.colorScheme.secondary,
+              style: TextStyle(color: theme.textTheme.bodyLarge?.color),
               decoration: InputDecoration(
                 labelText: 'Email Address',
-                labelStyle: TextStyle(color: Color(0xFF660033)),
-                hintStyle: TextStyle(color: Colors.grey[500]),
-                prefixIcon: Icon(Icons.email_outlined, color: Color(0xFF660033)),
+                labelStyle: TextStyle(color: theme.colorScheme.secondary),
+                hintStyle: TextStyle(color: theme.hintColor),
+                prefixIcon: Icon(
+                  Icons.email_outlined,
+                  color: theme.colorScheme.secondary,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Color(0xFF660033), width: 2),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.secondary,
+                    width: 2,
+                  ),
                 ),
               ),
             ),
@@ -369,7 +381,9 @@ class _LoginScreenState extends State<LoginScreen>
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Cancel',
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(
+                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
+              ),
             ),
           ),
           ElevatedButton(
@@ -400,14 +414,14 @@ class _LoginScreenState extends State<LoginScreen>
               // );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF660033),
+              backgroundColor: theme.primaryColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
             child: Text(
               'Send Reset Link',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: theme.colorScheme.onPrimary),
             ),
           ),
         ],
@@ -421,9 +435,7 @@ class _LoginScreenState extends State<LoginScreen>
         content: Text('$feature coming soon!'),
         backgroundColor: Color(0xFFf2c75a),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
