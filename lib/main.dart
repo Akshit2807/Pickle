@@ -4,12 +4,14 @@ import 'package:get/get.dart';
 
 import 'package:pickle/views/auth/splash_screen.dart';
 import 'package:pickle/controllers/auth_controller.dart';
+import 'package:pickle/controllers/profile_controller.dart';
+import 'package:pickle/controllers/discovery_controller.dart';
+import 'package:pickle/controllers/swipe_controller.dart';
+import 'package:pickle/controllers/match_controller.dart';
+import 'package:pickle/controllers/message_controller.dart';
+import 'package:pickle/controllers/safety_controller.dart';
 
 import 'package:google_fonts/google_fonts.dart';
-
-import 'package:pickle/views/auth/splash_screen.dart';
-import 'package:pickle/models/user.dart';
-import 'package:pickle/viewmodels/auth_viewmodel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +19,12 @@ void main() async {
 
   // Initialize GetX controllers
   Get.put(AuthController());
+  Get.put(ProfileController());
+  Get.put(DiscoveryController());
+  Get.put(SwipeController());
+  Get.put(MatchController());
+  Get.put(MessageController());
+  Get.put(SafetyController());
 
   runApp(PickleApp());
 }

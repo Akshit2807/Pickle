@@ -3,10 +3,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pickle/models/user.dart';
+import 'package:pickle/controllers/profile_controller.dart';
+import 'package:pickle/services/api_service.dart';
+import 'package:pickle/controllers/discovery_controller.dart';
+import 'package:pickle/controllers/match_controller.dart';
+import 'package:pickle/controllers/swipe_controller.dart';
+import 'package:pickle/controllers/message_controller.dart';
+import 'package:pickle/controllers/safety_controller.dart';
 
 class AuthController extends GetxController {
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final ApiService _apiService = ApiService();
 
   // Observable properties
   final Rx<firebase_auth.User?> _firebaseUser = Rx<firebase_auth.User?>(null);
@@ -29,6 +37,8 @@ class AuthController extends GetxController {
   // Sign up method
   Future<bool> signUp({
     required User user,
+    double? latitude,
+    double? longitude,
   }) async {
     try {
       _isLoading.value = true;
@@ -40,8 +50,10 @@ class AuthController extends GetxController {
       );
 
       if (credential.user != null) {
-        // Save user data to Firestore
-        await _firestore.collection('users').doc(credential.user!.uid).set({
+        final uid = credential.user!.uid;
+        
+        // Save user data to Firestore (backup)
+        await _firestore.collection('users').doc(uid).set({
           'name': user.name,
           'email': user.email,
           'phone': user.phone,
@@ -61,8 +73,42 @@ class AuthController extends GetxController {
           'createdAt': FieldValue.serverTimestamp(),
         });
 
-        _isLoading.value = false;
-        return true;
+        // Create profile on backend API
+        // NOTE: Real GPS coordinates are required for discovery to work properly
+        // Ensure latitude and longitude are obtained from device location services
+        if (latitude == null || longitude == null) {
+          print('WARNING: No location provided. Using default coordinates.');
+          print('Discovery feature will not work properly without real GPS data.');
+        }
+        
+        final apiResponse = await _apiService.createProfile(
+          uid: uid,
+          name: user.name!,
+          email: user.email!,
+          birthdate: user.birthDate?.toIso8601String().split('T')[0] ?? 
+                     DateTime.now().subtract(Duration(days: 365 * 20)).toIso8601String().split('T')[0],
+          gender: user.gender ?? 'other',
+          latitude: latitude ?? 0.0, // Fallback only - real GPS required
+          longitude: longitude ?? 0.0, // Fallback only - real GPS required
+        );
+
+        if (apiResponse.isSuccess) {
+          // Load profile into ProfileController
+          try {
+            final profileController = Get.put(ProfileController());
+            await profileController.loadProfile(uid);
+          } catch (e) {
+            print('Profile controller init error: $e');
+          }
+          
+          _isLoading.value = false;
+          return true;
+        } else {
+          // API call failed but Firebase user created
+          print('API profile creation failed: ${apiResponse.message}');
+          _isLoading.value = false;
+          return true; // Still return true as Firebase auth succeeded
+        }
       }
 
       _isLoading.value = false;
@@ -113,8 +159,21 @@ class AuthController extends GetxController {
         password: password,
       );
 
+      if (credential.user != null) {
+        // Load user profile from backend API
+        try {
+          final profileController = Get.put(ProfileController());
+          await profileController.loadProfile(credential.user!.uid);
+        } catch (e) {
+          print('Profile loading error: $e');
+        }
+
+        _isLoading.value = false;
+        return true;
+      }
+
       _isLoading.value = false;
-      return credential.user != null;
+      return false;
     } catch (e) {
       _isLoading.value = false;
       print('Sign in error: $e');
@@ -154,6 +213,19 @@ class AuthController extends GetxController {
   // Sign out method
   Future<void> signOut() async {
     try {
+      // Clear all controller data
+      try {
+        Get.find<ProfileController>().clearProfile();
+        Get.find<DiscoveryController>().clear();
+        Get.find<MatchController>().clear();
+        Get.find<SwipeController>().clear();
+        Get.find<MessageController>().clear();
+        Get.find<SafetyController>().clear();
+      } catch (e) {
+        // Controllers may not be initialized
+        print('Controller cleanup warning: $e');
+      }
+      
       await _auth.signOut();
     } catch (e) {
       print('Sign out error: $e');
